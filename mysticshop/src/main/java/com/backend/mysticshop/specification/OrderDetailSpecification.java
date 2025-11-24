@@ -36,9 +36,9 @@ public class OrderDetailSpecification {
     }
 
     /** Generate specification to filter orderitems by item id*/
-    public static Specification<OrderDetails> hasItemId(Long itemId){
+    public static Specification<OrderDetails> hasItemId(Integer itemId){
         return ((root, query , criteriaBuilder) ->
-                                     itemId != null ? criteriaBuilder.equal(root.get("itemId") , itemId) : null)  ;
+                                     itemId != null ? criteriaBuilder.equal(root.get("orderDetailID") , itemId) : null)  ;
     }
 
 }

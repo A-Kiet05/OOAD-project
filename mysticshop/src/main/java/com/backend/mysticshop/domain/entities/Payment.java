@@ -20,6 +20,8 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Cleanup;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Entity
@@ -27,28 +29,30 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@EqualsAndHashCode
 public class Payment {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY )
-    private Integer id;
+    @Column(name = "payment_id")
+    private Integer paymentID;
     
-    @Column(name= "Amount" , nullable = false )
+    @Column(name= "amount" , nullable = false )
     private BigDecimal amount; 
 
-    @Column(name = "Method", nullable = false , columnDefinition = "ENUM('CREDIT_CARD', 'PAYPAL', 'CASH_ON_DELIVERY')")
+    @Column(name = "method", nullable = false , columnDefinition = "ENUM('CREDIT_CARD', 'PAYPAL', 'CASH_ON_DELIVERY')")
     @Enumerated(EnumType.STRING)
     private PaymentMethod method;
     
-    @Column(name = "Status" , nullable = false)
+    @Column(name = "status" , nullable = false)
     @Enumerated(EnumType.STRING)
     private PaymentStatus status;
 
     @OneToOne
-    @JoinColumn(name = "OrderID" , nullable = false)
+    @JoinColumn(name = "order_id" , unique = true, nullable = false)
     private Order order;
 
-    @Column(name= "created_at" , nullable = false , updatable = false)
+    @Column(name= "created_at")
     @CreationTimestamp
     private LocalDate createdAt;
 }

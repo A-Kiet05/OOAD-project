@@ -8,6 +8,6 @@ import lombok.Data;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class OrderDetailsRequest {
     
-    private ProductDTO productID;
+    private Integer productID;
     private Integer quantity;
 }

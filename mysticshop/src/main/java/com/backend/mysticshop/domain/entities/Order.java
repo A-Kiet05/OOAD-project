@@ -4,7 +4,10 @@ package com.backend.mysticshop.domain.entities;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+
+import java.math.BigDecimal;
 import java.time.LocalDateTime; // Import cho kiểu TIMESTAMP trong SQL
 import java.util.ArrayList;
 import java.util.List;
@@ -20,33 +23,39 @@ import jakarta.persistence.*;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-
+@EqualsAndHashCode
 
 public class Order {
     
     @Id 
     @GeneratedValue(strategy = GenerationType.IDENTITY) 
+    @Column(name = "order_id")
     private Integer orderID; 
 
    
 
-    @Column(name = "OrderDate")
-    private LocalDateTime orderDate;
+    @Column(name = "order_date" )
+    private final LocalDateTime orderDate = LocalDateTime.now();
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "Status" , columnDefinition = "ENUM('Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled')")
-    private OrderStatus status;
+   
 
-    @Column(name ="ShippingAddress")
+    @Column(name ="shipping_address" , nullable = false)
     private String shippingAddress;
 
-    @ManyToMany
-    @JoinTable(
-        name = "order_products_details",
-        joinColumns = @JoinColumn(name = "OrderID"),
-        inverseJoinColumns = @JoinColumn(name = "ProductID")
-    )
-    private List<Product> orderedProductDetails = new ArrayList<>();
+    @Column(name = "total_amount" , nullable = false)
+    private BigDecimal totalAmount; 
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    // @ManyToMany
+    // @JoinTable(
+    //     name = "order_products_details",
+    //     joinColumns = @JoinColumn(name = "OrderID"),
+    //     inverseJoinColumns = @JoinColumn(name = "ProductID")
+    // )
+    // private List<Product> orderedProductDetails = new ArrayList<>();
 
     @OneToMany(mappedBy = "order" , cascade = CascadeType.ALL)
     private List<OrderDetails> orderDetails = new ArrayList<>();

@@ -21,6 +21,7 @@ import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Entity
@@ -29,28 +30,30 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@EqualsAndHashCode
 public class Appointment {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) 
+    @Column(name = "appointment_id")
     private Integer appointmentID; 
 
-    @Column(name = "BookingDate" )
+    @Column(name = "booking_date"  , nullable = false)
     private LocalDateTime bookingDate;
 
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "Status" , columnDefinition = "ENUM('Confirmed' , 'Cancelled' , 'Completed')")
+    @Column(name = "status" , nullable = false, columnDefinition = "ENUM('Confirmed' , 'Cancelled' , 'Completed')")
     private AppointmentStatus appointmentStatus;
 
-    @Column(name = "Notes" , length = 2000 )
+    @Column(name = "notes" , length = 2000 )
     private String notes;
 
     @OneToOne (fetch = FetchType.LAZY)
-    @JoinColumn(name = "SlotID" , unique = true , nullable = false)
+    @JoinColumn(name = "slot_id" , unique = true , nullable = false)
     private AvalabilitySlots avalabilitySlots;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "CustomerID" , nullable = false)
+    @JoinColumn(name = "customer_id" , nullable = false)
     private User customer;
 }

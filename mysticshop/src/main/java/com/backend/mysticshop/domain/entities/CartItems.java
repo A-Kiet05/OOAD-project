@@ -15,29 +15,32 @@ import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "cartitems")
+@Table(name = "cart_items")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@EqualsAndHashCode
 public class CartItems {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) 
+    @Column(name = "cart_item_id")
     private Integer cartItemsID; 
 
-    @Column(name ="Quantity")
+    @Column(name ="quantity" , nullable = false)
     private Integer quantity;
 
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "UserID")
+    @JoinColumn(name = "user_id")
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ProductID")
+    @JoinColumn(name = "product_id")
     private Product product;
 }

@@ -18,32 +18,35 @@ import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "aichatmessages")
+@Table(name = "ai_chat_messages")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@EqualsAndHashCode
 public class AIChatMessage {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) 
+    @Column(name = "message_id")
     private Integer aiChatMessageID; 
 
-    @Column( name = "Sender" , columnDefinition = "ENUM('User' , 'AI')")
+    @Column( name = "sender" ,nullable = false , columnDefinition = "ENUM('User' , 'AI')")
     private AIChatMessageSender sender ;
     
-    @Column(name = "MessageText" , nullable = false , length = 20000)
+    @Column(name = "message_text" , nullable = false , length = 20000)
     private String messageText;
 
     @CreatedDate
-    @Column(name = "Timestamp" , updatable = false , nullable = false)
+    @Column(name = "timestamp" , updatable = false , nullable = false)
     private LocalDateTime timeStamp;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "SessionID" , nullable = false)
+    @JoinColumn(name = "session_id" , nullable = false)
     private AIChatSession aiChatSession;
 
 }

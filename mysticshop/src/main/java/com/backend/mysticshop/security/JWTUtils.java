@@ -26,12 +26,12 @@ public class JWTUtils {
 
     private SecretKey key ;
     
-    @Value("${secretJwtString}")
-    private String secretJwtString;
+    @Value("${secreteJwtString}")
+    private String secreteJwtString;
 
     @PostConstruct
     private void init(){
-        byte[] keyBytes= secretJwtString.getBytes(StandardCharsets.UTF_8);
+        byte[] keyBytes= secreteJwtString.getBytes(StandardCharsets.UTF_8);
         this.key = new SecretKeySpec(keyBytes , "HmacSHA256");
     }
 

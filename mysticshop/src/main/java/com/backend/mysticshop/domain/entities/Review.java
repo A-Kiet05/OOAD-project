@@ -16,6 +16,7 @@ import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Table(name = "reviews")
@@ -24,27 +25,29 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@EqualsAndHashCode
 public class Review {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) 
+    @Column(name = "review_id")
     private Integer reviewID; 
 
-    @Column(name = "Rating")
+    @Column(name = "rating")
     private Integer rating;
 
-    @Column(name = "Comment" , columnDefinition = "TEXT" , length  = 2000)
+    @Column(name = "comment" , columnDefinition = "TEXT" , length  = 2000)
     private String comment;
 
-    @Column(name="ReviewDate")
-    private LocalDateTime reviewDate;
+    @Column(name="review_date")
+    private final LocalDateTime reviewDate= LocalDateTime.now();
 
     @ManyToOne( fetch = FetchType.LAZY)
-    @JoinColumn(name ="UserID")
+    @JoinColumn(name ="user_id")
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ProductID")
+    @JoinColumn(name = "product_id")
     private Product product;
 
 }

@@ -15,6 +15,7 @@ import com.backend.mysticshop.domain.dto.UserDTO;
 import com.backend.mysticshop.domain.entities.User;
 import com.backend.mysticshop.domain.enums.UserRole;
 import com.backend.mysticshop.exception.InvalidCredentialsException;
+import com.backend.mysticshop.mappers.Mapper;
 import com.backend.mysticshop.mappers.imple.UserMapperImple;
 import com.backend.mysticshop.repositories.UserRepository;
 import com.backend.mysticshop.security.JWTUtils;
@@ -30,7 +31,7 @@ public class UserServiceImple implements UserService {
     
     private final UserRepository userRepository;
     private final JWTUtils jwtUtils;
-    private final UserMapperImple userMapperImple;
+    private final Mapper<User,UserDTO> userMapper;
     private final PasswordEncoder passwordEncoder;
 
     
@@ -46,13 +47,14 @@ public class UserServiceImple implements UserService {
         User user = User.builder()
         .username(registrationRequest.getUsername())
         .email(registrationRequest.getEmail())
-        .passwordHash(registrationRequest.getPasswordHash())
+        .passwordHash(passwordEncoder.encode(registrationRequest.getPasswordHash()))
+        .fullName(registrationRequest.getFullName())
         .role(role)
         .build();
 
         User savedUser = userRepository.save(user);
 
-        UserDTO userDTO = userMapperImple.mapTo(savedUser);
+        UserDTO userDTO = userMapper.mapTo(savedUser);
 
         return Response.builder()
                        .status(200)
@@ -88,7 +90,7 @@ public class UserServiceImple implements UserService {
     public Response getAllUser(){
         
         List<User> userList = userRepository.findAll();
-        List<UserDTO> userDTOList = userList.stream().map(userMapperImple::mapTo).collect(Collectors.toList());
+        List<UserDTO> userDTOList = userList.stream().map(userMapper::mapTo).collect(Collectors.toList());
 
         return Response.builder()
                        .status(200)
@@ -110,7 +112,7 @@ public class UserServiceImple implements UserService {
     public Response getUserInfoAndOrderHistory(){
        
         User user = getLogin();
-        UserDTO userDTO = userMapperImple.mapTo(user);
+        UserDTO userDTO = userMapper.mapTo(user);
 
         return Response.builder().status(200).user(userDTO).build();
     }

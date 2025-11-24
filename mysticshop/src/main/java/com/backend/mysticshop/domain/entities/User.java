@@ -4,11 +4,15 @@ package com.backend.mysticshop.domain.entities;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import java.time.LocalDateTime; // Import cho kiểu TIMESTAMP trong SQL
-import java.util.ArrayList;
+
 import java.util.List;
 import java.util.Set;
+
+import org.hibernate.annotations.CreationTimestamp;
+
 import jakarta.persistence.*;
 
 import com.backend.mysticshop.domain.enums.UserRole;
@@ -25,51 +29,56 @@ import com.backend.mysticshop.domain.enums.UserRole;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@EqualsAndHashCode
 
 
 public class User {
 
     @Id 
     @GeneratedValue(strategy = GenerationType.IDENTITY  ) 
+    @Column(name = "user_id")
     private Integer userID; 
 
-    @Column(name ="Username" , unique = true)
+    @Column(name ="username" , unique = true , nullable = false)
     private String username;
 
-    @Column(name = "Email" , unique = true)
+    @Column(name = "email" , unique = true , nullable = false)
     private String email;
 
-    @Column(name="PasswordHash")
+    @Column(name="password_hash" , nullable = false)
     private String passwordHash;
 
+    @Column(name = "full_name" , nullable = false)
+    private String fullName;
+
     @Enumerated(EnumType.STRING)
-    @Column(name = "Role" , columnDefinition = "ENUM('Customer', 'Reader')")
+    @Column(name = "role" , columnDefinition = "ENUM('Customer', 'Reader')")
     private UserRole role;
 
-    @Column(name ="CreatedAt")
-    private LocalDateTime createdAt;
+    @Column(name ="created_at")
+    private final LocalDateTime createdAt = LocalDateTime.now();
 
-    @Column(name = "IsEmailVerified" , columnDefinition = "TINYINT(1) DEFAULT 0 ")
+    @Column(name = "is_email_verified" , columnDefinition = "TINYINT(1) DEFAULT 0 ")
     private Boolean isEmailVerified;
 
     @OneToMany(mappedBy = "user" , cascade = CascadeType.ALL)
-    private List<OrderDetails> ordersDetails = new ArrayList<>();
+    private List<OrderDetails> ordersDetails ;
 
     @OneToOne(mappedBy = "reader" , cascade = CascadeType.ALL)
     private ReaderProfiles readerProfiles;
 
     @OneToMany(mappedBy = "user" , cascade = CascadeType.ALL)
-    private List<Review> reviews = new ArrayList<>();
+    private List<Review> reviews ;
 
     @OneToMany(mappedBy = "user" , cascade = CascadeType.ALL)
-    private List<CartItems> cartItems = new ArrayList<>();
+    private List<CartItems> cartItems ;
 
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<AIChatSession> aiChatSessions = new ArrayList<>();
+    private List<AIChatSession> aiChatSessions;
 
-    @OneToMany(mappedBy = "user" , cascade = CascadeType.ALL)
-    private List<AvalabilitySlots> avalabilitySlots = new ArrayList<>();
+    @OneToMany(mappedBy = "reader" , cascade = CascadeType.ALL)
+    private List<AvalabilitySlots> avalabilitySlots ;
      
     @OneToMany(mappedBy = "customer" , cascade = CascadeType.ALL)
     private Set<Appointment> appointments;

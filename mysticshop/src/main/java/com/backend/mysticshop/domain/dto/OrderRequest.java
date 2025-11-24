@@ -17,4 +17,5 @@ public class OrderRequest {
     private BigDecimal totalAmount;
     private List<OrderDetailsRequest> orderDetailsRequests = new ArrayList<>();
     private Payment paymentInfo;
+    private String shippingAddress;
 }

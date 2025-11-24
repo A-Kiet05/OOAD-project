@@ -23,7 +23,6 @@ import lombok.NoArgsConstructor;
 public class OrderDTO {
     
     private Integer orderID;
-    private  LocalDateTime orderDate;
     private OrderStatus status;
     private String shippingAddress;
     private List<OrderDetailsDTO> orderDetails = new ArrayList<>();

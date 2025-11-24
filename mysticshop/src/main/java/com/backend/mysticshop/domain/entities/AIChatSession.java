@@ -21,31 +21,34 @@ import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "aichatsessions")
+@Table(name = "ai_chat_sessions")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@EqualsAndHashCode
 public class AIChatSession {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) 
+    @Column(name = "session_id")
     private Integer aiChatSessionID; 
     
 
     @CreatedDate
-    @Column(name = "StartTime" , updatable = false , nullable = false)
+    @Column(name = "start_time" , updatable = false , nullable = false)
     private LocalDateTime startTime;
     
     @CreatedDate
-    @Column(name = "EndTime" , updatable = false , nullable = false)
+    @Column(name = "end_time" , updatable = false , nullable = false)
     private LocalDateTime endTime;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name ="UserID" , nullable = false)
+    @JoinColumn(name ="user_id" , nullable = false)
     private User user;
 
     @OneToMany(mappedBy = "aiChatSession" , cascade = CascadeType.ALL)

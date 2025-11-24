@@ -34,9 +34,8 @@ public class UserDTO {
     private String username;
     private String email;
     private String passwordHash;
+    private String fullName;
     private UserRole role;
-    private LocalDateTime createdAt;
-    private Boolean isEmailVerified;
     private List<OrderDetailsDTO> ordersDetailsDTOs = new ArrayList<>(); //use for search order history 
     // private ReaderProfileDTO readerProfiles;
     // private List<ReviewDTO> reviews = new ArrayList<>();
