@@ -1,8 +1,8 @@
 package com.backend.mysticshop.domain.entities;
 
+import java.time.LocalTime;
 import java.util.Date;
-
-
+import java.util.List;
 
 import com.backend.mysticshop.domain.enums.ReaderStatus;
 
@@ -16,7 +16,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -39,23 +39,23 @@ public class AvalabilitySlots {
     @Column(name = "slot_id")
     private Integer slotID; 
 
-    @Column(name = "start_time" , nullable = false)
-    private Date startTime;
-
-
-    @Column(name = "end_time" , nullable = false)
-    private Date endTime;
     
     @Enumerated(EnumType.STRING)
     @Column(name = "status" , columnDefinition = "ENUM('Available' , 'Booked')")
     private ReaderStatus readerStatus;
+    
+    @Column(name = "start_time" , nullable = false)
+    private LocalTime startTime;
+
+    @Column(name = "end_time" , nullable = false)
+    private LocalTime endTime;
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "reader_id", nullable = false , updatable = false)
     private User reader;
 
-    @OneToOne(mappedBy = "avalabilitySlots" )
-    private Appointment appointment;
+    @OneToMany(mappedBy = "avalabilitySlots" )
+    private List<Appointment> appointments;
 
 
 }

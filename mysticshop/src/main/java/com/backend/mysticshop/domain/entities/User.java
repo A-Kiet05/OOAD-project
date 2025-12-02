@@ -81,5 +81,5 @@ public class User {
     private List<AvalabilitySlots> avalabilitySlots ;
      
     @OneToMany(mappedBy = "customer" , cascade = CascadeType.ALL)
-    private Set<Appointment> appointments;
+    private List<Appointment> appointments;
 }

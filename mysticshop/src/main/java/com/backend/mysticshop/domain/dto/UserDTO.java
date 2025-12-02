@@ -42,5 +42,5 @@ public class UserDTO {
     // private List<CartItemsDTO> cartItems = new ArrayList<>();
     // private List<AIChatSessionDTO> aiChatSessions = new ArrayList<>();
     // private List<AvailableSlotDTO> avalabilitySlots = new ArrayList<>();
-    // private Set<AppointmentDTO> appointments;
+    private List<AppointmentDTO> appointments = new ArrayList<>();
 }

@@ -45,4 +45,13 @@ public class Response {
 
     private OrderDTO order;
     private List<OrderDTO> orderList ;
+
+    private AppointmentDTO appointment;
+    private List<AppointmentDTO> appointmentDTOList;
+
+    private AvailableSlotDTO availableSlotDTO;
+    private List<AvailableSlotDTO> availableSlotDTOList;
+
+    private ReaderProfileDTO readerProfileDTO;
+    private List<ReaderProfileDTO> readerProfileDTOList;
 }

@@ -1,6 +1,8 @@
 package com.backend.mysticshop.domain.entities;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 import org.hibernate.annotations.Collate;
 
@@ -22,7 +24,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "appointments")
@@ -30,6 +34,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@Setter
+@Getter
 @EqualsAndHashCode
 public class Appointment {
     
@@ -38,9 +44,13 @@ public class Appointment {
     @Column(name = "appointment_id")
     private Integer appointmentID; 
 
-    @Column(name = "booking_date"  , nullable = false)
-    private LocalDateTime bookingDate;
+  
+    
+    @Column(name = "start_time" , nullable = false)
+    private LocalTime startTime;
 
+    @Column(name = "end_time" , nullable = false)
+    private LocalTime endTime;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status" , nullable = false, columnDefinition = "ENUM('Confirmed' , 'Cancelled' , 'Completed')")
@@ -49,7 +59,7 @@ public class Appointment {
     @Column(name = "notes" , length = 2000 )
     private String notes;
 
-    @OneToOne (fetch = FetchType.LAZY)
+    @ManyToOne (fetch = FetchType.LAZY)
     @JoinColumn(name = "slot_id" , unique = true , nullable = false)
     private AvalabilitySlots avalabilitySlots;
 
