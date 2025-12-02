@@ -1,0 +1,91 @@
+.parallax-container {
+  position: relative;
+  /* fill the parent's height (the section sets 563px) */
+  height: 100%;
+  overflow: hidden; /* clip translated images inside the section */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Top / bottom gradient overlays (same base color #E0F778) */
+.parallax-overlay {
+  position: absolute;
+  left: 0;
+  right: 0;
+  pointer-events: none;
+  z-index: 3;
+}
+.parallax-overlay-top {
+  top: 0;
+  height: 250px; /* adjust to taste */
+  background: linear-gradient(to bottom, #E0F778 25%, rgba(224,247,120,0.85) 35%, rgba(224,247,120,0.45) 60%, rgba(224,247,120,0) 100%);
+}
+.parallax-overlay-bottom {
+  bottom: 0;
+  height: 250px; /* adjust to taste */
+  background: linear-gradient(to top, #E0F778 25%, rgba(224,247,120,0.85) 35%, rgba(224,247,120,0.45) 60%, rgba(224,247,120,0) 100%);
+}
+
+.parallax-inner {
+  width: 100%;
+  height: 100%;
+}
+
+.parallax-columns {
+  display: flex;
+  gap: 20px;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  box-sizing: border-box;
+  justify-content: center;
+  align-items: center;
+}
+
+.col {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.col, .parallax-columns, .parallax-inner {
+  height: 100%;
+}
+
+.col-inner {
+  transition: transform 0.15s linear;
+  will-change: transform;
+}
+
+.item {
+  margin-bottom: 16px;
+}
+
+/* Stagger columns: left column pushed slightly down, right column slightly up */
+.parallax-columns .col:first-child .item {
+  margin-top: 28px;
+}
+.parallax-columns .col:last-child .item {
+  margin-top: 0;
+}
+
+.item img {
+  width: 240px;
+  height: 240px;
+  object-fit: cover;
+  display: block;
+  border-radius: 8px;
+  background: #fff;
+}
+
+@media (max-width: 700px) {
+  .parallax-columns { flex-direction: column; }
+  .col { width: 100%; }
+  .item img { width: 240px; height: 240px; }
+}
