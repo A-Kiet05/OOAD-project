@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.backend.mysticshop.domain.dto.ReaderProfileDTO;
 import com.backend.mysticshop.domain.dto.Response;
@@ -26,10 +27,14 @@ public class ReaderController {
 
     private final ReaderService readerService;
     
-     @PostMapping("/create-reader-profile/{readerId}")
+     @PostMapping("/create-reader-profile")
      @PreAuthorize("hasAuthority('READER')")
-     public ResponseEntity<Response> createReaderProfile(@PathVariable Integer readerId , @RequestBody ReaderProfileDTO readerProfileDTO){
-        return ResponseEntity.ok(readerService.createReaderProfile(readerId, readerProfileDTO));
+     public ResponseEntity<Response> createReaderProfile(@RequestParam (required = false) MultipartFile image,
+                                                         @RequestParam (required = false) String bio,
+                                                         @RequestParam (required = false) String specialities,
+                                                         @RequestParam (required = false) Integer experienceYears
+     ){
+        return ResponseEntity.ok(readerService.createReaderProfile(image, experienceYears , specialities , bio ));
      }
 
      
@@ -42,9 +47,12 @@ public class ReaderController {
      @PreAuthorize("hasAuthority('READER')")
      public ResponseEntity<Response> updateReaderProfile(
         @PathVariable Integer readerId ,
-        @RequestBody ReaderProfileDTO readerProfileDTO
+        @RequestParam (required = false) MultipartFile image,
+        @RequestParam (required = false) String bio,
+        @RequestParam (required = false) String specialities,
+        @RequestParam (required = false) Integer experienceYears
      ){
-        return ResponseEntity.ok(readerService.updateReaderProfile(readerId, readerProfileDTO));
+        return ResponseEntity.ok(readerService.updateReaderProfile(readerId, image , experienceYears , specialities , bio));
      }
 
 

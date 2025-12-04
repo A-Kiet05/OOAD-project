@@ -1,5 +1,6 @@
 package com.backend.mysticshop.controllers;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
@@ -50,11 +51,12 @@ public class SlotController {
     public ResponseEntity<Response> updateSlots(
     @PathVariable Integer slotID, 
     @RequestParam (required = false) String status ,
-    @RequestParam (required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalTime startTime,
-    @RequestParam (required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalTime endTime
+    @RequestParam (required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime startTime,
+    @RequestParam (required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime endTime,
+    @RequestParam (required =  false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date
 
    ){
-         return ResponseEntity.ok(slotService.updateSlot(slotID, startTime, endTime, status));
+         return ResponseEntity.ok(slotService.updateSlot(slotID,date ,  startTime, endTime, status));
    } 
 
     @GetMapping("/get-by-readerId-and-status")
@@ -69,11 +71,12 @@ public class SlotController {
     public ResponseEntity<Response> findAvailableSlotByTimeAndReaderId(
 
        @RequestParam (required = true) Integer readerID, 
-       @RequestParam (required = true) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalTime startTime,
-       @RequestParam (required = true) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalTime endTime
+       @RequestParam (required = true) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
+       @RequestParam (required = true) @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime startTime,
+       @RequestParam (required = true) @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime endTime
 
     ){
-         return ResponseEntity.ok(slotService.findAvailableSlotByTimeAndReaderId(startTime, endTime, readerID));
+         return ResponseEntity.ok(slotService.findAvailableSlotByTimeAndReaderId(readerID , date , startTime , endTime));
     }
 
     @GetMapping("/get-by-id/{slotID}")

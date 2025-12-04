@@ -1,5 +1,7 @@
 package com.backend.mysticshop.domain.dto;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import com.backend.mysticshop.domain.entities.User;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -27,7 +29,8 @@ public class ReaderProfileDTO {
     private String bio;
     private Integer experienceYears;
     private String specialties;
-    private String avatarUrl;
     private User reader;
+    private String avatarUrl;   
+    
 
 }

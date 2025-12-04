@@ -1,5 +1,6 @@
 package com.backend.mysticshop.domain.dto;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Date;
 
@@ -21,6 +22,7 @@ import lombok.NoArgsConstructor;
 public class AvailableSlotDTO {
     
     private Integer slotID; 
+  private LocalDate date;  
     private LocalTime startTime;
     private LocalTime endTime;
     private ReaderStatus readerStatus;

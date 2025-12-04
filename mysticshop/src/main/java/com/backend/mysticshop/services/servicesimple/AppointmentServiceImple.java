@@ -1,6 +1,7 @@
 package com.backend.mysticshop.services.servicesimple;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Sort;
@@ -46,20 +47,42 @@ public class AppointmentServiceImple implements AppointmentService {
         }
         
         AvalabilitySlots avalabilitySlots = availableSlotRepository.findById(slotID).orElseThrow(() -> new NotFoundException("Slot with desired ID does not have!"));
-        Response slotUpdatedStatus = slotService.updateSlot(slotID , null , null , "booked");
 
-        if(slotUpdatedStatus.getStatus() != 200){
-            throw new IllegalArgumentException("Slot is not available for booking !");
-        }
+        boolean isSlotBooked = false;
+        Response slotUpdatedStatus = slotService.updateSlot(slotID , null , null , null , "booked");
         User user = userService.getLogin();
 
         if(user == null || user.getRole().toString().equals("READER")){
             throw new IllegalArgumentException("Only customer can create appointment!");
         }
-        
-        List<Appointment> existingAppointments = avalabilitySlots.getAppointments();
-        if(!slotIsAvailable(appointmentRequest , existingAppointments)){
-            throw new IllegalArgumentException("The Selected Time Slot is not available for booking !");
+
+        if(slotUpdatedStatus.getStatus() != 200){
+
+            isSlotBooked = true;
+        }else {
+            
+            List<Appointment> existingAppointments = avalabilitySlots.getAppointments();
+            if (!slotIsAvailable(appointmentRequest, existingAppointments)) {
+                isSlotBooked = true;
+                
+            }
+        }
+
+        if (isSlotBooked) {
+            
+            Integer suggestedSlotId = findNextAvailableSlot(slotID);
+            String message = "Slot for desired time is not available !";
+            if (suggestedSlotId != null) {
+                
+                message += "we suggest the nearest available slot : ID " + suggestedSlotId;
+                return Response.builder()
+                        .status(409) // Conflict : Slot has been booked
+                        .message(message)
+                        .nearestSlotID(suggestedSlotId)
+                        .build();
+            } else {
+                throw new IllegalArgumentException("The Selected Time Slot is not available and no nearby slots were found!");
+            }
         }
         
         appointmentRequest.setCustomer(user);
@@ -134,6 +157,38 @@ public class AppointmentServiceImple implements AppointmentService {
                                 || (appointmentRequest.getStartTime().equals(existingAppointment.getEndTime())
                                 && appointmentRequest.getEndTime().equals(existingAppointment.getStartTime()))
                 );
+    }
+
+    private Integer findNextAvailableSlot(Integer currentSlotId) {
+        int attempt = 1;
+        int maxAttempts = 10; // find in next 10 slots to save perform
+
+        while (attempt <= maxAttempts) {
+            Integer nextId = currentSlotId + attempt;
+            Optional<AvalabilitySlots> nextSlotOpt = availableSlotRepository.findById(nextId);
+
+            if (nextSlotOpt.isPresent()) {
+                AvalabilitySlots nextSlot = nextSlotOpt.get();
+                
+                
+                boolean isFree = false;
+                // Kiểm tra status của slot (Giả sử getter là getReaderStatus hoặc getStatus)
+                if (nextSlot.getReaderStatus() != null && 
+                    nextSlot.getReaderStatus().toString().equalsIgnoreCase("AVAILABLE")) {
+                    isFree = true;
+                }
+
+                // Nếu status OK, kiểm tra tiếp xem có bị full lịch không (nếu 1 slot chứa nhiều appointment)
+                // Nếu quy tắc là 1 slot = 1 appointment thì chỉ cần check status là đủ.
+                // Nếu 1 slot cho phép nhiều người đặt, cần check existingAppointments như hàm slotIsAvailable.
+                
+                if (isFree) {
+                    return nextId;
+                }
+            }
+            attempt++;
+        }
+        return null; 
     }
 
 }

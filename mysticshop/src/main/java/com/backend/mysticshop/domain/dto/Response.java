@@ -54,4 +54,6 @@ public class Response {
 
     private ReaderProfileDTO readerProfileDTO;
     private List<ReaderProfileDTO> readerProfileDTOList;
+
+    private Integer nearestSlotID;
 }

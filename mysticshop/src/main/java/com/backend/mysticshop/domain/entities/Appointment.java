@@ -59,6 +59,9 @@ public class Appointment {
     @Column(name = "notes" , length = 2000 )
     private String notes;
 
+    @Column(name = "booking_date" , nullable = false)
+    private LocalDate bookingDate;
+
     @ManyToOne (fetch = FetchType.LAZY)
     @JoinColumn(name = "slot_id" , unique = true , nullable = false)
     private AvalabilitySlots avalabilitySlots;

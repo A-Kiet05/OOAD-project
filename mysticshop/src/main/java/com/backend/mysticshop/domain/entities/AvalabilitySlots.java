@@ -1,5 +1,6 @@
 package com.backend.mysticshop.domain.entities;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Date;
 import java.util.List;
@@ -11,6 +12,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -43,6 +45,9 @@ public class AvalabilitySlots {
     @Enumerated(EnumType.STRING)
     @Column(name = "status" , columnDefinition = "ENUM('Available' , 'Booked')")
     private ReaderStatus readerStatus;
+
+    @Column(name = "date" , nullable = false)
+    private LocalDate date;
     
     @Column(name = "start_time" , nullable = false)
     private LocalTime startTime;
@@ -50,7 +55,7 @@ public class AvalabilitySlots {
     @Column(name = "end_time" , nullable = false)
     private LocalTime endTime;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reader_id", nullable = false , updatable = false)
     private User reader;
 

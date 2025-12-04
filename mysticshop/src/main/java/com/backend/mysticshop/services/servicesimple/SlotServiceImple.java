@@ -1,5 +1,6 @@
 package com.backend.mysticshop.services.servicesimple;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -45,7 +46,8 @@ public class SlotServiceImple implements SlotService{
         AvalabilitySlots avalabilitySlots = new AvalabilitySlots();
         avalabilitySlots.setStartTime(slotRequest.getStartTime());
         avalabilitySlots.setEndTime(slotRequest.getEndTime());
-        avalabilitySlots.setReaderStatus(ReaderStatus.Available);
+        avalabilitySlots.setDate(slotRequest.getDate());
+        avalabilitySlots.setReaderStatus(slotRequest.getReaderStatus());
         avalabilitySlots.setReader(user);
         availableSlotRepository.save(avalabilitySlots);
 
@@ -69,8 +71,8 @@ public class SlotServiceImple implements SlotService{
 
     @Override
     public Response findSlotsByStatus(String status){
-            String normalizedStatus = status.trim().toUpperCase();
-            List<AvailableSlotDTO> slotDTOs = availableSlotRepository.findByReaderStatus(normalizedStatus)
+            
+            List<AvailableSlotDTO> slotDTOs = availableSlotRepository.findByReaderStatus(ReaderStatus.valueOf(status.toUpperCase()))
                                                                      .stream()
                                                                      .map(availabilitySlotMapper::mapTo)
                                                                      .collect(Collectors.toList());
@@ -83,12 +85,13 @@ public class SlotServiceImple implements SlotService{
     }
 
     @Override
-    public Response updateSlot(Integer slotID , LocalTime startTime , LocalTime endTime, String status){
+    public Response updateSlot(Integer slotID , LocalDate date, LocalTime startTime , LocalTime endTime, String status){
 
         AvalabilitySlots slot = availableSlotRepository.findById(slotID).orElseThrow(() -> new NotFoundException("Not found desired slotID!"));
 
         if(startTime != null)slot.setStartTime(startTime);
         if(endTime != null) slot.setEndTime(endTime);
+        if(date != null) slot.setDate(date);
         if(status != null) slot.setReaderStatus(ReaderStatus.valueOf(status.toUpperCase()));
         availableSlotRepository.save(slot);
 
@@ -113,8 +116,8 @@ public class SlotServiceImple implements SlotService{
 
     @Override
     public Response findSlotByReaderIdAndStatus(Integer readerID , String status){
-             String normalizedStatus = status.trim().toUpperCase();
-             List<AvailableSlotDTO> slotDTOs = availableSlotRepository.findByReaderUserIDAndReaderStatus(readerID, normalizedStatus)
+             
+             List<AvailableSlotDTO> slotDTOs = availableSlotRepository.findByReaderUserIDAndReaderStatus(readerID, ReaderStatus.valueOf(status.toUpperCase()))
                                                                       .stream()
                                                                       .map(availabilitySlotMapper::mapTo)
                                                                       .collect(Collectors.toList());
@@ -126,7 +129,7 @@ public class SlotServiceImple implements SlotService{
     }
 
     @Override
-    public Response findAvailableSlotByTimeAndReaderId(LocalTime startTime , LocalTime endTime , Integer readerID ){
+    public Response findAvailableSlotByTimeAndReaderId(Integer readerID , LocalDate date, LocalTime startTime , LocalTime endTime ){
              
         User user = userRepository.findById(readerID).orElseThrow(() -> new NotFoundException("Reader not found !"));
 
@@ -135,7 +138,7 @@ public class SlotServiceImple implements SlotService{
 
         }
 
-        List<AvailableSlotDTO> slotDTOs = availableSlotRepository.findAvailableSlotByDateAndReaderId(startTime, endTime, user.getUserID())
+        List<AvailableSlotDTO> slotDTOs = availableSlotRepository.findAvailableSlotByDateAndReaderId(user.getUserID() , date , startTime , endTime)
                                                                  .stream()
                                                                  .map(availabilitySlotMapper::mapTo)
                                                                  .collect(Collectors.toList());
