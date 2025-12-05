@@ -2,6 +2,7 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { CartProvider } from './context/CartContext.jsx'
+import { AuthProvider } from './context/AuthContext.jsx'
 import App from './App.jsx'
 import Home from './pages/Home.jsx'
 import Contact from './pages/Contact.jsx'
@@ -12,17 +13,22 @@ import ShopCollections from './pages/ShopCollections.jsx'
 import ProductDetail from './pages/ProductDetail.jsx'
 import "./styles/base.css";
 import AuthPage from './pages/AuthPage.jsx'
+import BookingPage from './pages/BookingPage.jsx'
+import ReadingPage from './pages/ReadingPage.jsx'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <CartProvider>
-      <BrowserRouter>
+    <AuthProvider>
+      <CartProvider>
+        <BrowserRouter>
         <Routes>
           <Route path="/" element={<App />}>
             <Route path="auth" element={<AuthPage />} />
             <Route index element={<Home />} />
             <Route path="contact" element={<Contact  />} />
             <Route path="users/:id" element={<User />} />
+            <Route path="booking" element={<BookingPage />} />
+            <Route path="reading" element={<ReadingPage />} />
           </Route>
 
           <Route path="/shop" element={<ShopLayout><ShopHome /></ShopLayout>} />
@@ -32,7 +38,8 @@ createRoot(document.getElementById('root')).render(
           {/* 404 catch-all */}
           <Route path="*" element={<main style={{padding:16}}>Page not found</main>} />
         </Routes>
-      </BrowserRouter>
-    </CartProvider>
+        </BrowserRouter>
+      </CartProvider>
+    </AuthProvider>
   </StrictMode>,
 )

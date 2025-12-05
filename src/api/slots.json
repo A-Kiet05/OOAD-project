@@ -1,0 +1,13 @@
+{
+  "2025-12-03": [
+    { "time": "09:00", "available": true },
+    { "time": "10:00", "available": false },
+    { "time": "11:00", "available": true }
+  ],
+  "2025-12-04": [
+    { "time": "09:00", "available": true },
+    { "time": "10:00", "available": true },
+    { "time": "11:00", "available": false },
+    { "time": "12:00", "available": true }
+  ]
+}

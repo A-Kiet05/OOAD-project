@@ -9,6 +9,7 @@ import SupervisorAccountIcon from "@mui/icons-material/SupervisorAccount";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import { Link as RouterLink } from "react-router-dom";
+import { useAuth } from "../context/AuthContext.jsx";
 
 export default function NavBar() {
   const navBtnSx = {
@@ -23,16 +24,12 @@ export default function NavBar() {
 
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const { user, logout } = useAuth();
 
   const handleClick = (event) => setAnchorEl(event.currentTarget);
   const handleClose = () => setAnchorEl(null);
-  const handleLogin = () => {
-    setIsAuthenticated(true);
-    handleClose();
-  };
   const handleLogout = () => {
-    setIsAuthenticated(false);
+    logout();
     handleClose();
   };
 
@@ -131,12 +128,31 @@ export default function NavBar() {
           {/* User dropdown */}
           <Box>
             <IconButton
-              sx={{ color: "#fff", ...navBtnSx, paddingRight: '25px' }}
+              sx={{ color: "#fff", ...navBtnSx, paddingRight: "25px" }}
               aria-controls={open ? "user-menu" : undefined}
               aria-haspopup="true"
               onClick={handleClick}
             >
-              <SupervisorAccountIcon />
+              {user ? (
+                <Box
+                  sx={{
+                    width: 34,
+                    height: 34,
+                    borderRadius: "50%",
+                    bgcolor: "#E0F778",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    color: "#000",
+                    fontWeight: 700,
+                    textTransform: "uppercase",
+                  }}
+                >
+                  {user.fullName ? user.fullName.charAt(0) : "U"}
+                </Box>
+              ) : (
+                <SupervisorAccountIcon />
+              )}
             </IconButton>
 
             <Menu
@@ -158,12 +174,12 @@ export default function NavBar() {
               }}
               MenuListProps={{ sx: { p: 0 } }}
             >
-              {!isAuthenticated ? (
+              {!user ? (
                 <>
                   <MenuItem
                     component={RouterLink}
                     to="/auth"
-                    onClick={handleLogin}
+                    onClick={handleClose}
                     sx={{ "&:hover": { bgcolor: "#E0F778", color: "#000" }, fontWeight: 700 }}
                   >
                     Login
@@ -171,7 +187,7 @@ export default function NavBar() {
                   <MenuItem
                     component={RouterLink}
                     to="/auth"
-                    onClick={handleLogin}
+                    onClick={handleClose}
                     sx={{ "&:hover": { bgcolor: "#E0F778", color: "#000" }, fontWeight: 700 }}
                   >
                     Sign Up

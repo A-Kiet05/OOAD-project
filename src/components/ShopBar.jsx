@@ -119,8 +119,8 @@ export default function ShopBar() {
             width: "100%",
           }}
         >
-          {/* Left Section - Menu Buttons */}
-          <Box sx={{ display: "flex", gap: 4 }}>
+        {/* Left Section - Menu Buttons */}
+          <Box sx={{ display: { xs: "none", sm: "flex" }, gap: { sm: 2, md: 4 } }}>
             {Object.keys(shopMenuItems).map((menuName) => (
               <Box
                 key={menuName}
@@ -153,14 +153,15 @@ export default function ShopBar() {
           <Box
             sx={{
               display: "flex",
-              gap: 2,
+              gap: { xs: 1, sm: 2 },
               alignItems: "center",
-              paddingRight: "20px",
+              paddingRight: { xs: "12px", sm: "20px" },
             }}
           >
             <Button
               onClick={() => setOpenSearch(true)}
               sx={{
+                display: { xs: "none", sm: "block" },
                 color: "#000",
                 textTransform: "uppercase",
                 fontSize: "0.9rem",
@@ -174,6 +175,16 @@ export default function ShopBar() {
             >
               SEARCH
             </Button>
+
+            <IconButton
+              onClick={() => setOpenSearch(true)}
+              sx={{
+                display: { xs: "block", sm: "none" },
+                color: "#000",
+              }}
+            >
+              <SearchIcon />
+            </IconButton>
 
             <IconButton
               onClick={() => setOpenCart(true)}
