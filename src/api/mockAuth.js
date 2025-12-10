@@ -6,13 +6,36 @@ const DEFAULT_USERS = [
     fullName: "Kiệt Lặc",
     email: "kiet@gmail.com",
     password: "kietlac123",
+    role: "user",
   },
   {
     id: 2,
     fullName: "Admin",
     email: "admin@gmail.com",
     password: "admin123",
-  }
+    role: "user",
+  },
+  {
+    id: 3,
+    fullName: "Peppa Pig",
+    email: "peppa@reader.com",
+    password: "peppa123",
+    role: "reader",
+  },
+  {
+    id: 4,
+    fullName: "Shaun The Sheep",
+    email: "shaun@reader.com",
+    password: "shaun123",
+    role: "reader",
+  },
+  {
+    id: 5,
+    fullName: "Big Bad Wolf",
+    email: "wolf@reader.com",
+    password: "wolf123",
+    role: "reader",
+  },
 ];
 
 // Khởi tạo user vào localStorage nếu chưa có
@@ -51,7 +74,7 @@ export function login(email, password) {
 
       if (!user) return reject("Wrong email or password :(");
 
-      resolve({ id: user.id, email: user.email, fullName: user.fullName });
+      resolve({ id: user.id, email: user.email, fullName: user.fullName, role: user.role || "user" });
     }, 600);
   });
 }
@@ -70,6 +93,7 @@ export function signup(fullName, email, password) {
         fullName,
         email,
         password,
+        role: "user",
       };
 
       users.push(newUser);

@@ -15,6 +15,7 @@ import "./styles/base.css";
 import AuthPage from './pages/AuthPage.jsx'
 import BookingPage from './pages/BookingPage.jsx'
 import ReadingPage from './pages/ReadingPage.jsx'
+import ReaderSchedulePage from './pages/ReaderSchedulePage.jsx'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -29,6 +30,7 @@ createRoot(document.getElementById('root')).render(
             <Route path="users/:id" element={<User />} />
             <Route path="booking" element={<BookingPage />} />
             <Route path="reading" element={<ReadingPage />} />
+            <Route path="reader-schedule" element={<ReaderSchedulePage />} />
           </Route>
 
           <Route path="/shop" element={<ShopLayout><ShopHome /></ShopLayout>} />

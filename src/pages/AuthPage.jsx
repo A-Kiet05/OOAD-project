@@ -7,7 +7,7 @@ import LightRays from "../components/LightRays.jsx";
 export default function AuthPage() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { login, signup } = useAuth();
+  const { login, signup, user } = useAuth();
 
   const [tab, setTab] = useState(0); // 0 = Login, 1 = Signup
   const [loading, setLoading] = useState(false);
@@ -29,6 +29,17 @@ export default function AuthPage() {
     }
   }, [location.state]);
 
+  // Redirect if user is already logged in
+  useEffect(() => {
+    if (user) {
+      if (user.role === "reader") {
+        navigate("/reader-schedule");
+      } else {
+        navigate("/");
+      }
+    }
+  }, [user, navigate]);
+
   const textFieldStyle = {
     "& .MuiOutlinedInput-input": { color: "#E0F778", backgroundColor: "#1E1E1E" },
     "& .MuiInputLabel-root": { color: "#E0F778" },
@@ -45,8 +56,8 @@ export default function AuthPage() {
     setError("");
     setLoading(true);
     try {
-      await login(loginEmail, loginPassword);
-      navigate("/");
+      const u = await login(loginEmail, loginPassword);
+      // Redirect handled by useEffect watching user state
     } catch (err) {
       setError(String(err));
     } finally {
@@ -58,8 +69,8 @@ export default function AuthPage() {
     setError("");
     setLoading(true);
     try {
-      await signup(signupName, signupEmail, signupPassword);
-      navigate("/");
+      const u = await signup(signupName, signupEmail, signupPassword);
+      // Redirect handled by useEffect watching user state
     } catch (err) {
       setError(String(err));
     } finally {

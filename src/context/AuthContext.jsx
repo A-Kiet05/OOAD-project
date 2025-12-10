@@ -24,13 +24,13 @@ export function AuthProvider({ children }) {
 
   const login = async (email, password) => {
     const u = await mockLogin(email, password);
-    setUser({ id: u.id, email: u.email, fullName: u.fullName });
+    setUser({ id: u.id, email: u.email, fullName: u.fullName, role: u.role });
     return u;
   };
 
   const signup = async (fullName, email, password) => {
     const u = await mockSignup(fullName, email, password);
-    const userObj = { id: u.id, email: u.email, fullName: u.fullName };
+    const userObj = { id: u.id, email: u.email, fullName: u.fullName, role: u.role };
     setUser(userObj);
     return userObj;
   };
