@@ -116,7 +116,7 @@ public class ReaderServiceImple implements ReaderService {
 
         return Response.builder()       
                        .status(200)
-                       
+                       .readerProfileDTOList(readerProfileDTOs)
                        .build();
     }
 

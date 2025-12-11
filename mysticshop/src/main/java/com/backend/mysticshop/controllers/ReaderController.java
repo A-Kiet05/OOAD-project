@@ -43,7 +43,7 @@ public class ReaderController {
         return ResponseEntity.ok(readerService.getReaderProfileByUserId(readerId));
      }
 
-     @PutMapping("update-reader-profile/{readerId}")
+     @PutMapping("/update-reader-profile/{readerId}")
      @PreAuthorize("hasAuthority('READER')")
      public ResponseEntity<Response> updateReaderProfile(
         @PathVariable Integer readerId ,

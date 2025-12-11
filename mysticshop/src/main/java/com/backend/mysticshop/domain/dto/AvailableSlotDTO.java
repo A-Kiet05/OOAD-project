@@ -22,10 +22,10 @@ import lombok.NoArgsConstructor;
 public class AvailableSlotDTO {
     
     private Integer slotID; 
-  private LocalDate date;  
+    private LocalDate date;  
     private LocalTime startTime;
     private LocalTime endTime;
     private ReaderStatus readerStatus;
     private UserDTO reader;
-    private Appointment appointment;
+   
 }

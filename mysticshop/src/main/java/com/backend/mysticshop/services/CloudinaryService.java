@@ -10,19 +10,21 @@ import com.backend.mysticshop.domain.dto.CloudinaryResponse;
 import com.cloudinary.Cloudinary;
 
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 
 @Service
+@RequiredArgsConstructor
 public class CloudinaryService {
-    @Autowired
-    private Cloudinary cloudinary;
+    
+    private final Cloudinary cloudinary;
 
     @Transactional
     public CloudinaryResponse uploadFile(
         MultipartFile file,
         String fileName,
         String folder
-) {
-    try {
+  ) {
+      try {
         Map<String, Object> uploadResult = cloudinary.uploader().upload(
                 file.getBytes(),
                 Map.of(
@@ -36,8 +38,21 @@ public class CloudinaryService {
                 .url((String) uploadResult.get("secure_url"))
                 .build();
 
-    } catch (Exception e) {
+      }   catch (Exception e) {
         throw new RuntimeException("Cloudinary upload failed: " + e.getMessage());
+      }
     }
-}
+
+//     public void delete(String publicId) {
+
+//      try {
+//         cloudinary.uploader().destroy(publicId, com.cloudinary.utils.ObjectUtils.emptyMap());
+//     } catch (Exception e) {
+//         throw new RuntimeException("Cloudinary delete failed: " + e.getMessage());
+//     }
+//   }
+
+
+
+
 }

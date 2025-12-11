@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -25,12 +26,12 @@ public class AppointmentController {
     private final AppointmentService appointmentService;
 
 
-    @PostMapping("/create-appointment/{slotId}")
+    @PostMapping("/create-appointment")
     @PreAuthorize("hasAuthority('CUSTOMER')")
-    public ResponseEntity<Response> createAppointment(@PathVariable Integer slotId , 
+    public ResponseEntity<Response> createAppointment( 
                                                       @RequestBody Appointment appointmentRequest)
     {
-           return ResponseEntity.ok(appointmentService.saveAppointment(slotId , appointmentRequest));
+           return ResponseEntity.ok(appointmentService.saveAppointment( appointmentRequest));
     }
 
     @GetMapping("/all")
@@ -44,10 +45,17 @@ public class AppointmentController {
         return ResponseEntity.ok(appointmentService.findAppointmentByStatus(status));
     }
 
-    @DeleteMapping("/cancel-appointment/{appointmentID}")
+    @PutMapping("/cancel-appointment/{appointmentID}")
     @PreAuthorize("hasAuthority('CUSTOMER')")
     public ResponseEntity<Response> cancelAppoinment(@PathVariable Integer appointmentID){
         return ResponseEntity.ok(appointmentService.cancelAppointment(appointmentID));
     }
+   
+    @DeleteMapping("delete-appointment/{appointmentID}")
+    @PreAuthorize("hasAuthority('READER')")
+    public ResponseEntity<Response> deleteAppointment(@PathVariable Integer appointmentID){
+        return ResponseEntity.ok(appointmentService.deleteAppointment(appointmentID));
+    }
+
 
 }

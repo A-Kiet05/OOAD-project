@@ -29,7 +29,7 @@ public class ReaderProfileDTO {
     private String bio;
     private Integer experienceYears;
     private String specialties;
-    private User reader;
+    private UserDTO readerId;
     private String avatarUrl;   
     
 

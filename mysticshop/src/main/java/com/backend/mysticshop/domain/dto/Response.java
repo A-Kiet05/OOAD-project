@@ -56,4 +56,8 @@ public class Response {
     private List<ReaderProfileDTO> readerProfileDTOList;
 
     private Integer nearestSlotID;
+   
+    private CartItemsDTO cartItemsDTO;
+    private List<CartItemsDTO> cartItemsDTOList;
+    
 }

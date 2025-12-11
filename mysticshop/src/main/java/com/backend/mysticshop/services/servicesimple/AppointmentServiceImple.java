@@ -1,5 +1,7 @@
 package com.backend.mysticshop.services.servicesimple;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -13,6 +15,7 @@ import com.backend.mysticshop.domain.entities.Appointment;
 import com.backend.mysticshop.domain.entities.AvalabilitySlots;
 import com.backend.mysticshop.domain.entities.User;
 import com.backend.mysticshop.domain.enums.AppointmentStatus;
+import com.backend.mysticshop.domain.enums.ReaderStatus;
 import com.backend.mysticshop.exception.InvalidCredentialsException;
 import com.backend.mysticshop.exception.NotFoundException;
 import com.backend.mysticshop.mappers.Mapper;
@@ -39,14 +42,18 @@ public class AppointmentServiceImple implements AppointmentService {
     private final SlotService slotService;
 
     @Override
-    public Response saveAppointment(Integer slotID  , Appointment appointmentRequest){
+    public Response saveAppointment( Appointment appointmentRequest){
         
         
         if(appointmentRequest.getEndTime().isBefore(appointmentRequest.getStartTime())){
             throw new IllegalArgumentException("Start Time must come before End Time");
         }
         
-        AvalabilitySlots avalabilitySlots = availableSlotRepository.findById(slotID).orElseThrow(() -> new NotFoundException("Slot with desired ID does not have!"));
+        AvalabilitySlots avalabilitySlots = availableSlotRepository
+        .findByDateAndStartTimeAndEndTime(appointmentRequest.getBookingDate() , appointmentRequest.getStartTime() , appointmentRequest.getEndTime())
+        .orElseThrow(() -> new NotFoundException("Slot with desired date and time does not have!"));
+       
+        Integer slotID = avalabilitySlots.getSlotID();
 
         boolean isSlotBooked = false;
         Response slotUpdatedStatus = slotService.updateSlot(slotID , null , null , null , "booked");
@@ -110,15 +117,38 @@ public class AppointmentServiceImple implements AppointmentService {
                        .appointmentDTOList(appointmentDTOs)
                        .build();
     }
+    
+    @Override
+    public Response updateAppointment(Integer appointmentID , LocalDate  bookingDate , LocalTime startTime , LocalTime endTime , String notes , String status){
+
+        Appointment appointment= appointmentRepository.findById(appointmentID).orElseThrow(() -> new NotFoundException("appoinment ID not found!"));
+        
+        if(bookingDate!= null)appointment.setBookingDate(bookingDate);
+        if(startTime != null)appointment.setStartTime(startTime);
+        if(endTime != null) appointment.setEndTime(endTime);
+        if(notes != null) appointment.setNotes(notes);
+        if(status != null) appointment.setAppointmentStatus(AppointmentStatus.valueOf(status.toUpperCase()));
+
+        appointmentRepository.save(appointment);
+
+          return Response.builder()
+                       .status(200)
+                       .message("Updated Successfully!")
+                       .build();
+        
+    }
+
 
     @Override
     public  Response cancelAppointment(Integer appointmentID){
           
-        appointmentRepository.findById(appointmentID).orElseThrow(() -> new NotFoundException("appoinment ID not found!"));
-        appointmentRepository.deleteById(appointmentID);
+       Appointment appointment= appointmentRepository.findById(appointmentID).orElseThrow(() -> new NotFoundException("appoinment ID not found!"));
+       slotService.updateSlot(appointment.getAvalabilitySlots().getSlotID(), null, null, null, "available");
+       updateAppointment(appointmentID, null, null, null, null, "Cancelled");
+       
         return Response.builder()
                        .status(200)
-                       .message("deleted")
+                       .message("Cancelled Successfully!")
                        .build();
     }
     @Override
@@ -134,6 +164,17 @@ public class AppointmentServiceImple implements AppointmentService {
                        .build();
 
 
+    }
+
+    @Override
+    public  Response deleteAppointment(Integer appointmentID){
+          
+      appointmentRepository.findById(appointmentID).orElseThrow(() -> new NotFoundException("appoinment ID not found!"));
+      appointmentRepository.deleteById(appointmentID);
+        return Response.builder()
+                       .status(200)
+                       .message("Deleted Successfully!")
+                       .build();
     }
 
     public boolean slotIsAvailable(Appointment appointmentRequest , List<Appointment> existingAppointmnents){
@@ -178,9 +219,7 @@ public class AppointmentServiceImple implements AppointmentService {
                     isFree = true;
                 }
 
-                // Nếu status OK, kiểm tra tiếp xem có bị full lịch không (nếu 1 slot chứa nhiều appointment)
-                // Nếu quy tắc là 1 slot = 1 appointment thì chỉ cần check status là đủ.
-                // Nếu 1 slot cho phép nhiều người đặt, cần check existingAppointments như hàm slotIsAvailable.
+                
                 
                 if (isFree) {
                     return nextId;

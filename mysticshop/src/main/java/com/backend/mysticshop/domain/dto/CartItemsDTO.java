@@ -26,6 +26,6 @@ public class CartItemsDTO {
     
     private Integer cartItemsID; 
     private Integer quantity;
-    private UserDTO user;
-    private ProductDTO product;
+    private UserDTO userId;
+    private ProductDTO productId;
 }

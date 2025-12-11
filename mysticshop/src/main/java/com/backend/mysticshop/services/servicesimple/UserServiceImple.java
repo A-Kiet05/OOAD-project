@@ -10,6 +10,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.backend.mysticshop.domain.dto.LoginRequest;
+import com.backend.mysticshop.domain.dto.ResgisterRequest;
 import com.backend.mysticshop.domain.dto.Response;
 import com.backend.mysticshop.domain.dto.UserDTO;
 import com.backend.mysticshop.domain.entities.User;
@@ -36,7 +37,7 @@ public class UserServiceImple implements UserService {
 
     
     @Override
-    public Response registryUser(UserDTO registrationRequest){
+    public Response registryUser(ResgisterRequest registrationRequest){
         
         UserRole role = UserRole.CUSTOMER;
         

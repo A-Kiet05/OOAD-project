@@ -1,10 +1,10 @@
 package com.backend.mysticshop.domain.dto;
 
-
+import com.backend.mysticshop.domain.enums.UserRole;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,13 +14,19 @@ import lombok.NoArgsConstructor;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @AllArgsConstructor
 @NoArgsConstructor
-public class OrderDetailsDTO {
+public class ResgisterRequest {
+
+    @NotBlank
+    private String username;
     
-   
-    private Integer orderDetailID;
-    private ProductDTO productId;
-    private UserDTO userId;
-    private OrderDTO orderId;
-    private Integer quantity;
-    private Double priceAtPurchase;
+    @NotBlank
+    private String email;
+
+    @NotBlank
+    private String passwordHash;
+
+    @NotBlank
+    private String fullName;
+    
+    private UserRole role;
 }

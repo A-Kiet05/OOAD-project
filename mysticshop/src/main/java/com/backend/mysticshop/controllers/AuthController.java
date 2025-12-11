@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.backend.mysticshop.domain.dto.LoginRequest;
+import com.backend.mysticshop.domain.dto.ResgisterRequest;
 import com.backend.mysticshop.domain.dto.Response;
 import com.backend.mysticshop.domain.dto.UserDTO;
 import com.backend.mysticshop.services.UserService;
@@ -24,8 +25,8 @@ public class AuthController{
      private final UserService userService;
      
      @PostMapping("/register")
-     public ResponseEntity<Response> registryUser(@RequestBody UserDTO userDTO){
-            return ResponseEntity.ok(userService.registryUser(userDTO));
+     public ResponseEntity<Response> registryUser(@RequestBody ResgisterRequest resgisterRequest){
+            return ResponseEntity.ok(userService.registryUser(resgisterRequest));
      }
 
      @GetMapping("/login")

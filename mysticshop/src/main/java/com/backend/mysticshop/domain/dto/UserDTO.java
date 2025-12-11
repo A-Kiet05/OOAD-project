@@ -33,14 +33,13 @@ public class UserDTO {
     private Integer userID;
     private String username;
     private String email;
-    private String passwordHash;
     private String fullName;
     private UserRole role;
-    private List<OrderDetailsDTO> ordersDetailsDTOs = new ArrayList<>(); //use for search order history 
+    // private List<OrderDetailsDTO> ordersDetailsDTOs = new ArrayList<>(); //use for search order history 
     // private ReaderProfileDTO readerProfiles;
     // private List<ReviewDTO> reviews = new ArrayList<>();
     // private List<CartItemsDTO> cartItems = new ArrayList<>();
     // private List<AIChatSessionDTO> aiChatSessions = new ArrayList<>();
     // private List<AvailableSlotDTO> avalabilitySlots = new ArrayList<>();
-    private List<AppointmentDTO> appointments = new ArrayList<>();
+    // private List<AppointmentDTO> appointments = new ArrayList<>();
 }

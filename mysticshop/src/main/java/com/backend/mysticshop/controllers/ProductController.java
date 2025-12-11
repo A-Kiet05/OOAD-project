@@ -30,11 +30,11 @@ public class ProductController {
     
     @PostMapping("/create-product")
     @PreAuthorize("hasAuthority('READER')")
-    public ResponseEntity<Response> createProduct(@RequestParam (required = false) MultipartFile image,
-                                                  @RequestParam (required = false) String description,
-                                                  @RequestParam (required = false) String name,
-                                                  @RequestParam (required = false) BigDecimal price,
-                                                  @RequestParam (required = false) Integer stockQuantity
+    public ResponseEntity<Response> createProduct(@RequestParam (required = true) MultipartFile image,
+                                                  @RequestParam (required = true) String description,
+                                                  @RequestParam (required = true) String name,
+                                                  @RequestParam (required = true) BigDecimal price,
+                                                  @RequestParam (required = true) Integer stockQuantity
                                                  ){
                     return ResponseEntity.ok(productService.createProduct(image, name, description, price, stockQuantity));
     }

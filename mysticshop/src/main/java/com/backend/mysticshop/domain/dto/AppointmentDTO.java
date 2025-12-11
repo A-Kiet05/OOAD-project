@@ -25,6 +25,6 @@ public class AppointmentDTO {
     private LocalDate endTime;
     private AppointmentStatus appointmentStatus;
     private String notes;
-    private AvalabilitySlots avalabilitySlots;
-    private UserDTO customer;
+    private AvailableSlotDTO avalabilitySlots;
+    private UserDTO customerId;
 }
