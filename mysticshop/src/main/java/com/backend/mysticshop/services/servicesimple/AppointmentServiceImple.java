@@ -8,8 +8,10 @@ import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.backend.mysticshop.domain.dto.AppointmentDTO;
+import com.backend.mysticshop.domain.dto.AppointmentRequest;
 import com.backend.mysticshop.domain.dto.Response;
 import com.backend.mysticshop.domain.entities.Appointment;
 import com.backend.mysticshop.domain.entities.AvalabilitySlots;
@@ -42,48 +44,57 @@ public class AppointmentServiceImple implements AppointmentService {
     private final SlotService slotService;
 
     @Override
-    public Response saveAppointment( Appointment appointmentRequest){
+    @Transactional
+    public Response saveAppointment(AppointmentRequest appointmentRequest) {
         
-        
+        // 1. Validate Time
         if(appointmentRequest.getEndTime().isBefore(appointmentRequest.getStartTime())){
             throw new IllegalArgumentException("Start Time must come before End Time");
         }
         
-        AvalabilitySlots avalabilitySlots = availableSlotRepository
-        .findByDateAndStartTimeAndEndTime(appointmentRequest.getBookingDate() , appointmentRequest.getStartTime() , appointmentRequest.getEndTime())
-        .orElseThrow(() -> new NotFoundException("Slot with desired date and time does not have!"));
-       
-        Integer slotID = avalabilitySlots.getSlotID();
-
-        boolean isSlotBooked = false;
-        Response slotUpdatedStatus = slotService.updateSlot(slotID , null , null , null , "booked");
+        // 2. Validate User
         User user = userService.getLogin();
-
-        if(user == null || user.getRole().toString().equals("READER")){
-            throw new IllegalArgumentException("Only customer can create appointment!");
+        if(user == null || "READER".equals(user.getRole().toString())){
+             throw new IllegalArgumentException("Only customer can create appointment!");
         }
 
-        if(slotUpdatedStatus.getStatus() != 200){
-
+        // 3. Tìm Slot theo Date/Time
+        // Lưu ý: Logic này giả định 1 khung giờ chỉ có 1 slot duy nhất.
+        AvalabilitySlots avalabilitySlot = availableSlotRepository
+        .findByDateAndStartTimeAndEndTime(
+            appointmentRequest.getBookingDate(), 
+            appointmentRequest.getStartTime(), 
+            appointmentRequest.getEndTime()
+        )
+        .orElseThrow(() -> new NotFoundException("Slot with desired date and time does not exist!"));
+       
+        // 4. Kiểm tra xem Slot đã bị đặt chưa
+        boolean isSlotBooked = false;
+        
+        // Cách 1: Check status trực tiếp của Slot (Nhanh và chuẩn nhất)
+        if (avalabilitySlot.getReaderStatus() == ReaderStatus.BOOKED) {
             isSlotBooked = true;
-        }else {
-            
-            List<Appointment> existingAppointments = avalabilitySlots.getAppointments();
-            if (!slotIsAvailable(appointmentRequest, existingAppointments)) {
-                isSlotBooked = true;
-                
-            }
+        } 
+        // Cách 2: Check list appointment (như code cũ của bạn - để chắc chắn)
+        else {
+             List<Appointment> existingAppointments = avalabilitySlot.getAppointments();
+             if (existingAppointments != null && !existingAppointments.isEmpty()) {
+                 // Nếu đã có appointment nào đó confirmed/completed trong slot này
+                 boolean hasActiveAppt = existingAppointments.stream()
+                     .anyMatch(a -> a.getAppointmentStatus() != AppointmentStatus.CANCELLED);
+                 if (hasActiveAppt) isSlotBooked = true;
+             }
         }
 
+        // 5. Xử lý khi Slot đã bị đặt -> Gợi ý slot khác
         if (isSlotBooked) {
+            Integer suggestedSlotId = findNextAvailableSlot(avalabilitySlot); // Logic tối ưu hơn
+            String message = "Slot for desired time is not available!";
             
-            Integer suggestedSlotId = findNextAvailableSlot(slotID);
-            String message = "Slot for desired time is not available !";
             if (suggestedSlotId != null) {
-                
-                message += "we suggest the nearest available slot : ID " + suggestedSlotId;
+                message += " We suggest the nearest available slot: ID " + suggestedSlotId;
                 return Response.builder()
-                        .status(409) // Conflict : Slot has been booked
+                        .status(409) // 409 Conflict
                         .message(message)
                         .nearestSlotID(suggestedSlotId)
                         .build();
@@ -92,18 +103,29 @@ public class AppointmentServiceImple implements AppointmentService {
             }
         }
         
-        appointmentRequest.setCustomer(user);
-        appointmentRequest.setAvalabilitySlots(avalabilitySlots);
-        appointmentRequest.setAppointmentStatus(AppointmentStatus.CONFIRMED);
-        appointmentRepository.save(appointmentRequest);
+        // 6. Thực hiện Booking (Happy Path)
+        
+        // Update trạng thái Slot thành BOOKED
+        // Không cần gọi SlotService.updateSlot, thao tác trực tiếp trên Entity trong Transaction
+        avalabilitySlot.setReaderStatus(ReaderStatus.BOOKED);
+        availableSlotRepository.save(avalabilitySlot); 
+
+        // Tạo Appointment
+        Appointment appointment = new Appointment();
+        appointment.setCustomer(user);
+        appointment.setAvalabilitySlots(avalabilitySlot);
+        appointment.setAppointmentStatus(AppointmentStatus.CONFIRMED);
+        appointment.setBookingDate(appointmentRequest.getBookingDate());
+        appointment.setStartTime(appointmentRequest.getStartTime());
+        appointment.setEndTime(appointmentRequest.getEndTime());
+        appointment.setNotes(appointmentRequest.getNotes()); // Nếu có notes
+
+        appointmentRepository.save(appointment);
+
         return Response.builder()
-                       .status(200)
-                       .message("Save Appoinment Successfully !")
-                       .build();
-
-
-
-
+                .status(200)
+                .message("Save Appointment Successfully!")
+                .build();
     }
 
     @Override
@@ -119,6 +141,7 @@ public class AppointmentServiceImple implements AppointmentService {
     }
     
     @Override
+    @Transactional
     public Response updateAppointment(Integer appointmentID , LocalDate  bookingDate , LocalTime startTime , LocalTime endTime , String notes , String status){
 
         Appointment appointment= appointmentRepository.findById(appointmentID).orElseThrow(() -> new NotFoundException("appoinment ID not found!"));
@@ -143,8 +166,12 @@ public class AppointmentServiceImple implements AppointmentService {
     public  Response cancelAppointment(Integer appointmentID){
           
        Appointment appointment= appointmentRepository.findById(appointmentID).orElseThrow(() -> new NotFoundException("appoinment ID not found!"));
-       slotService.updateSlot(appointment.getAvalabilitySlots().getSlotID(), null, null, null, "available");
-       updateAppointment(appointmentID, null, null, null, null, "Cancelled");
+       AvalabilitySlots slot = appointment.getAvalabilitySlots();
+       slot.setReaderStatus(ReaderStatus.AVAILABLE);
+       availableSlotRepository.save(slot);
+
+       appointment.setAppointmentStatus(AppointmentStatus.CANCELLED);
+       appointmentRepository.save(appointment);
        
         return Response.builder()
                        .status(200)
@@ -177,7 +204,7 @@ public class AppointmentServiceImple implements AppointmentService {
                        .build();
     }
 
-    public boolean slotIsAvailable(Appointment appointmentRequest , List<Appointment> existingAppointmnents){
+    public boolean slotIsAvailable(AppointmentRequest appointmentRequest , List<Appointment> existingAppointmnents){
 
         return existingAppointmnents.stream()
                 .noneMatch(existingAppointment ->
@@ -200,34 +227,27 @@ public class AppointmentServiceImple implements AppointmentService {
                 );
     }
 
-    private Integer findNextAvailableSlot(Integer currentSlotId) {
-        int attempt = 1;
-        int maxAttempts = 10; // find in next 10 slots to save perform
+    private Integer findNextAvailableSlot(AvalabilitySlots currentSlot) {
+        // Thay vì loop ID (vì ID có thể không liên tục hoặc slot ID kế tiếp lại thuộc về Reader khác/Ngày khác)
+        // Hãy tìm slot tiếp theo của CÙNG READER, trong CÙNG NGÀY (hoặc tương lai), có trạng thái AVAILABLE
+        
+        // Giả sử bạn có method repository này (nên thêm vào AvailableSlotRepository):
+        // findFirstByReaderAndDateAndStartTimeAfterAndReaderStatusOrderByStartTimeAsc(...)
+        
+        // Dưới đây là logic giả lập sử dụng DB query thay vì loop tay:
+        List<AvalabilitySlots> nextSlots = availableSlotRepository.findAvailableSlotByDateAndReaderId(
+            currentSlot.getReader().getUserID(),
+            currentSlot.getDate(),
+            currentSlot.getEndTime(), // Tìm sau giờ kết thúc của slot hiện tại
+            LocalTime.MAX // Đến hết ngày
+        );
 
-        while (attempt <= maxAttempts) {
-            Integer nextId = currentSlotId + attempt;
-            Optional<AvalabilitySlots> nextSlotOpt = availableSlotRepository.findById(nextId);
-
-            if (nextSlotOpt.isPresent()) {
-                AvalabilitySlots nextSlot = nextSlotOpt.get();
-                
-                
-                boolean isFree = false;
-                // Kiểm tra status của slot (Giả sử getter là getReaderStatus hoặc getStatus)
-                if (nextSlot.getReaderStatus() != null && 
-                    nextSlot.getReaderStatus().toString().equalsIgnoreCase("AVAILABLE")) {
-                    isFree = true;
-                }
-
-                
-                
-                if (isFree) {
-                    return nextId;
-                }
-            }
-            attempt++;
+        if (!nextSlots.isEmpty()) {
+            return nextSlots.get(0).getSlotID(); // Lấy slot đầu tiên tìm thấy
         }
-        return null; 
+        
+        return null;
     }
-
 }
+
+

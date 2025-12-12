@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.backend.mysticshop.domain.dto.AppointmentRequest;
 import com.backend.mysticshop.domain.dto.Response;
 import com.backend.mysticshop.domain.entities.Appointment;
 import com.backend.mysticshop.services.AppointmentService;
@@ -29,7 +30,7 @@ public class AppointmentController {
     @PostMapping("/create-appointment")
     @PreAuthorize("hasAuthority('CUSTOMER')")
     public ResponseEntity<Response> createAppointment( 
-                                                      @RequestBody Appointment appointmentRequest)
+                                                      @RequestBody AppointmentRequest appointmentRequest)
     {
            return ResponseEntity.ok(appointmentService.saveAppointment( appointmentRequest));
     }

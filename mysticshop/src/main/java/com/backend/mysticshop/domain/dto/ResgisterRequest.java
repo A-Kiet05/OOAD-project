@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ResgisterRequest {
 
-    @NotBlank
+    
     private String username;
     
     @NotBlank

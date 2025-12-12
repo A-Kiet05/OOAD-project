@@ -1,0 +1,30 @@
+.hero-fade-init { opacity: 0; transform: translateY(12px); }
+.hero-fade {
+  animation-name: heroFadeUp;
+  animation-duration: 7s;
+  animation-timing-function: cubic-bezier(.22,.9,.36,1);
+  animation-fill-mode: forwards;
+}
+.hero-fade.delay-1 { animation-delay: 360ms; }
+.hero-fade.delay-2 { animation-delay: 360ms; }
+.hero-fade.delay-1 { animation-delay: 120ms; }
+.hero-fade.delay-2 { animation-delay: 360ms; }
+/* generic delay utilities so different animation classes can share the same timing */
+.delay-1 { animation-delay: 120ms !important; }
+.delay-2 { animation-delay: 360ms !important; }
+
+@keyframes heroFadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.hero-big-fade {
+  animation-name: heroBigIn;
+  animation-duration: 7s;
+  animation-timing-function: cubic-bezier(.18,.9,.32,1);
+  animation-fill-mode: forwards;
+}
+@keyframes heroBigIn {
+  from { opacity: 0; transform: scale(.96) translateY(6px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}

@@ -32,33 +32,46 @@ public class JWTAuthFilter extends OncePerRequestFilter {
          
         String token = getTokenFromRequest(request);
 
-        if(token!= null){
+        try {
+            if (token != null) {
+            String username = jwtUtils.getUsernameFromToken(token);
 
-              String username = jwtUtils.getUsernameFromToken(token);
-              UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
+            if (username != null &&
+                SecurityContextHolder.getContext().getAuthentication() == null) {
 
-              if(StringUtils.hasText(username) && jwtUtils.isTokenValid(token, userDetails)){
+                UserDetails userDetails =
+                        customUserDetailsService.loadUserByUsername(username);
 
-                  log.info("Valid JWT for {} " , username);
-
-                  UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                  
-                  usernamePasswordAuthenticationToken.setDetails( new WebAuthenticationDetailsSource().buildDetails(request));
-
-                  SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
-              }
+                if (jwtUtils.isTokenValid(token, userDetails)) {
+                    UsernamePasswordAuthenticationToken auth =
+                            new UsernamePasswordAuthenticationToken(
+                                    userDetails,
+                                    null,
+                                    userDetails.getAuthorities()
+                            );
+                    auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    SecurityContextHolder.getContext().setAuthentication(auth);
+                }
+            }
         }
+
+        } catch (Exception e) {
+            // Nếu token bị sai hoặc lỗi → KHÔNG được block, chỉ bỏ qua
+            log.error("JWT Filter error: {}", e.getMessage());
+        }
+        
         filterChain.doFilter(request, response);
 
 
     }
 
-    private String getTokenFromRequest(HttpServletRequest request){
-        String token = request.getHeader("Authorization");
-        if(StringUtils.hasText(token) && StringUtils.startsWithIgnoreCase(token, "Bearer")){
-            return token.substring(7);
-        }
-        return null;
+    private String getTokenFromRequest(HttpServletRequest request) {
 
+            String bearerToken = request.getHeader("Authorization");
+            if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
+                return bearerToken.substring(7);
+            }
+            return null;
     }
+
 }

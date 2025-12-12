@@ -40,4 +40,19 @@ public interface AvailableSlotRepository extends JpaRepository<AvalabilitySlots,
         );
 
         Optional<AvalabilitySlots> findByDateAndStartTimeAndEndTime(LocalDate date, LocalTime startTime, LocalTime endTime);
+
+        @Query("SELECT s FROM AvalabilitySlots s " +
+       "WHERE s.reader.userID = :readerId " +
+       "AND s.date = :date " +
+       // Điều kiện Giao nhau (Overlap Check) chuẩn: 
+       // Slot_cũ.startTime < Slot_mới.endTime VÀ Slot_cũ.endTime > Slot_mới.startTime
+       "AND (" +
+           "(s.startTime < :newEndTime AND s.endTime > :newStartTime)" +
+       ")")
+        List<AvalabilitySlots> findOverlappingSlots(
+            @Param("readerId") Integer readerId, 
+            @Param("date") LocalDate date, 
+            @Param("newStartTime") LocalTime newStartTime, 
+            @Param("newEndTime") LocalTime newEndTime
+        );
 }

@@ -6,12 +6,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.backend.mysticshop.domain.dto.AvailableSlotDTO;
 import com.backend.mysticshop.domain.dto.Response;
 import com.backend.mysticshop.domain.dto.SlotRequest;
 import com.backend.mysticshop.domain.entities.AvalabilitySlots;
 import com.backend.mysticshop.domain.entities.User;
+import com.backend.mysticshop.domain.enums.AppointmentStatus;
 import com.backend.mysticshop.domain.enums.ReaderStatus;
 import com.backend.mysticshop.exception.NotFoundException;
 import com.backend.mysticshop.mappers.Mapper;
@@ -36,6 +38,7 @@ public class SlotServiceImple implements SlotService{
     private final UserRepository userRepository;
 
     @Override
+    @Transactional
     public Response createSlot(SlotRequest slotRequest){
            
         User user = userService.getLogin();
@@ -43,11 +46,30 @@ public class SlotServiceImple implements SlotService{
             throw new IllegalArgumentException("Only Reader can create slots!");
         }
 
+        // 🔴 LOGIC ĐÃ SỬA: Kiểm tra Slot giao nhau bằng hàm query chuẩn xác
+        List<AvalabilitySlots> overlappingSlots = availableSlotRepository.findOverlappingSlots(
+            user.getUserID(), 
+            slotRequest.getDate(), 
+            slotRequest.getStartTime(), 
+            slotRequest.getEndTime()
+        );
+
+        if (!overlappingSlots.isEmpty()) { 
+            // Nếu tìm thấy bất kỳ slot nào giao nhau
+            throw new IllegalArgumentException("Slot already exists or overlaps with another slot for this reader and time!");
+        }
+
+
+        // 🔴 Bổ sung validate thời gian: Start phải trước End
+        if(slotRequest.getEndTime().isBefore(slotRequest.getStartTime()) || slotRequest.getEndTime().equals(slotRequest.getStartTime())){
+             throw new IllegalArgumentException("End Time must be after Start Time!");
+        }
+
         AvalabilitySlots avalabilitySlots = new AvalabilitySlots();
         avalabilitySlots.setStartTime(slotRequest.getStartTime());
         avalabilitySlots.setEndTime(slotRequest.getEndTime());
         avalabilitySlots.setDate(slotRequest.getDate());
-        avalabilitySlots.setReaderStatus(slotRequest.getReaderStatus());
+        avalabilitySlots.setReaderStatus(ReaderStatus.AVAILABLE);
         avalabilitySlots.setReader(user);
         availableSlotRepository.save(avalabilitySlots);
 
@@ -85,10 +107,33 @@ public class SlotServiceImple implements SlotService{
     }
 
     @Override
+    @Transactional
     public Response updateSlot(Integer slotID , LocalDate date, LocalTime startTime , LocalTime endTime, String status){
 
         AvalabilitySlots slot = availableSlotRepository.findById(slotID).orElseThrow(() -> new NotFoundException("Not found desired slotID!"));
+         
+        // === LOGIC MỚI: CHECK BOOKING TRƯỚC KHI SỬA ===
+        // Nếu định sửa thời gian (Date, StartTime, EndTime)
+        if (date != null || startTime != null || endTime != null) {
+            
+            // Cách 1: Kiểm tra trạng thái Slot (Nhanh nhất)
+            if (slot.getReaderStatus() == ReaderStatus.BOOKED) {
+                throw new IllegalArgumentException("Cannot update time of a BOOKED slot. Please cancel the appointment first.");
+            }
 
+            // Cách 2: Kiểm tra danh sách Appointment (Chắc chắn nhất)
+            // Giả sử Entity AvalabilitySlots có quan hệ @OneToMany với Appointment
+            if (slot.getAppointments() != null && !slot.getAppointments().isEmpty()) {
+                boolean hasActiveAppointment = slot.getAppointments().stream()
+                        .anyMatch(app -> app.getAppointmentStatus() != AppointmentStatus.CANCELLED);
+                
+                if (hasActiveAppointment) {
+                    throw new IllegalArgumentException("This slot has active appointments. Cannot modify time.");
+                }
+            }
+        }
+
+        //====================
         if(startTime != null)slot.setStartTime(startTime);
         if(endTime != null) slot.setEndTime(endTime);
         if(date != null) slot.setDate(date);
@@ -102,6 +147,7 @@ public class SlotServiceImple implements SlotService{
     }
 
     @Override
+    @Transactional
     public Response deleteSlot(Integer slotID){
        
         availableSlotRepository.findById(slotID).orElseThrow(()-> new NotFoundException("Slot Desired Not Found!"));
