@@ -67,8 +67,8 @@ public class User {
     @OneToOne(mappedBy = "reader" , cascade = CascadeType.ALL)
     private ReaderProfiles readerProfiles;
 
-    @OneToMany(mappedBy = "user" , cascade = CascadeType.ALL)
-    private List<Review> reviews ;
+    // @OneToMany(mappedBy = "user" , cascade = CascadeType.ALL)
+    // private List<Review> reviews ;
 
     @OneToMany(mappedBy = "user" , cascade = CascadeType.ALL)
     private List<CartItems> cartItems ;

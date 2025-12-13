@@ -11,7 +11,7 @@ import com.backend.mysticshop.domain.entities.AvalabilitySlots;
 import com.backend.mysticshop.domain.entities.CartItems;
 import com.backend.mysticshop.domain.entities.Order;
 import com.backend.mysticshop.domain.entities.ReaderProfiles;
-import com.backend.mysticshop.domain.entities.Review;
+
 import com.backend.mysticshop.domain.enums.UserRole;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -37,7 +37,6 @@ public class UserDTO {
     private UserRole role;
     // private List<OrderDetailsDTO> ordersDetailsDTOs = new ArrayList<>(); //use for search order history 
     // private ReaderProfileDTO readerProfiles;
-    // private List<ReviewDTO> reviews = new ArrayList<>();
     // private List<CartItemsDTO> cartItems = new ArrayList<>();
     // private List<AIChatSessionDTO> aiChatSessions = new ArrayList<>();
     // private List<AvailableSlotDTO> avalabilitySlots = new ArrayList<>();

@@ -9,9 +9,9 @@ import com.backend.mysticshop.domain.dto.Response;
 public interface ProductService {
     
 
-    Response createProduct(MultipartFile image , String name , String description , BigDecimal price , Integer stockQuantity);
+    Response createProduct( String name , String description , BigDecimal price , Integer stockQuantity ,  String imageUrl , String backgroundUrl , Integer categoryId);
 
-    Response updateProduct(Integer productID , MultipartFile image , String name , String description , BigDecimal price , Integer stockQuantity);
+    Response updateProduct(Integer productID ,  String name , String description , BigDecimal price , Integer stockQuantity , String imageUrl , String backgroundUrl , Integer categoryId);
 
     Response deleteProduct(Integer productID);
 

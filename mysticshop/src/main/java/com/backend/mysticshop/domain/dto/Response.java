@@ -59,5 +59,8 @@ public class Response {
    
     private CartItemsDTO cartItemsDTO;
     private List<CartItemsDTO> cartItemsDTOList;
+
+    private CategoryDTO categoryDTO;
+    private List<CategoryDTO> categoryDTOs;
     
 }

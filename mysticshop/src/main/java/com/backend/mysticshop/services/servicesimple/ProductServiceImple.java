@@ -12,11 +12,14 @@ import org.springframework.web.multipart.MultipartFile;
 import com.backend.mysticshop.domain.dto.CloudinaryResponse;
 import com.backend.mysticshop.domain.dto.ProductDTO;
 import com.backend.mysticshop.domain.dto.Response;
+import com.backend.mysticshop.domain.entities.Category;
 import com.backend.mysticshop.domain.entities.Product;
 import com.backend.mysticshop.exception.NotFoundException;
 import com.backend.mysticshop.mappers.Mapper;
 import com.backend.mysticshop.mappers.imple.ProductMapperImple;
+import com.backend.mysticshop.repositories.CategoryRepository;
 import com.backend.mysticshop.repositories.ProductRepository;
+import com.backend.mysticshop.services.CategoryService;
 import com.backend.mysticshop.services.CloudinaryService;
 import com.backend.mysticshop.services.ProductService;
 import com.cloudinary.Cloudinary;
@@ -32,31 +35,37 @@ public class ProductServiceImple implements ProductService{
     private final ProductRepository productRepository;
     private final Mapper<Product, ProductDTO> productMapper;
     // private final AwsS3Service awsS3Service;
-    private final CloudinaryService cloudinaryService;
+    // private final CloudinaryService cloudinaryService;
+    private final CategoryRepository categoryRepository;
     
     @Override
-    public Response createProduct(MultipartFile image , String name , String description , BigDecimal price , Integer stockQuantity){
+    public Response createProduct( String name , String description , BigDecimal price , Integer stockQuantity , String imageUrl , String backgroundUrl , Integer categoryId){
          
-         CloudinaryResponse cloudinaryResponse = null;
+      //    CloudinaryResponse cloudinaryResponse = null;
 
-        if (image != null && !image.isEmpty()) {
-        cloudinaryResponse = cloudinaryService.uploadFile(
-                image,
-                "product_" + name.replace(" ", "_"),
-                "products"
-        );
-      }
+      //   if (image != null && !image.isEmpty()) {
+      //   cloudinaryResponse = cloudinaryService.uploadFile(
+      //           image,
+      //           "product_" + name.replace(" ", "_"),
+      //           "products"
+      //   );
+      // }
+
+       Category category = categoryRepository.findById(categoryId).orElseThrow(() -> new NotFoundException("category not found!"));
+       
         
         Product product = new Product();
         product.setName(name);
         product.setDescription(description);
         product.setPrice(price);
-        product.setPrice(price);
         product.setStockQuantity(stockQuantity);
+        product.setImageUrl(imageUrl);
+        product.setBackgroundUrl(backgroundUrl);
+        product.setCategory(category);
        
-        if (cloudinaryResponse != null) {
-        product.setImageUrl(cloudinaryResponse.getUrl());
-      }
+      //   if (cloudinaryResponse != null) {
+      //   product.setImageUrl(cloudinaryResponse.getUrl());
+      // }
 
        productRepository.save(product);
 
@@ -71,21 +80,27 @@ public class ProductServiceImple implements ProductService{
     }
 
     @Override
-    public Response updateProduct(Integer productID , MultipartFile image , String name , String description , BigDecimal price , Integer stockQuantity){
+    public Response updateProduct(Integer productID , String name , String description , BigDecimal price , Integer stockQuantity , String imageUrl , String backgroundUrl , Integer categoryId){
           
         Product product = productRepository.findById(productID).orElseThrow(() -> new NotFoundException("Not Found Product!"));
+
+        if(categoryId != null){
+
+            Category category = categoryRepository.findById(categoryId).orElseThrow(() -> new NotFoundException("category not found!"));
+            product.setCategory(category);
+        }
+
+      //   if (image != null && !image.isEmpty()) {
+
+      //   CloudinaryResponse cloudinaryResponse = cloudinaryService.uploadFile(
+      //           image,
+      //           "product_" + productID,
+      //           "products"
+      //   );
+
+      //   product.setImageUrl(cloudinaryResponse.getUrl());
+      // }
         
-        if (image != null && !image.isEmpty()) {
-
-        CloudinaryResponse cloudinaryResponse = cloudinaryService.uploadFile(
-                image,
-                "product_" + productID,
-                "products"
-        );
-
-        product.setImageUrl(cloudinaryResponse.getUrl());
-      }
-
         if(name != null) product.setName(name);
         if(description != null) product.setDescription(description);
         if(price != null) product.setPrice(price);

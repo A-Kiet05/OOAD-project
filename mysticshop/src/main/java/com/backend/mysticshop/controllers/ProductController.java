@@ -30,26 +30,31 @@ public class ProductController {
     
     @PostMapping("/create-product")
     @PreAuthorize("hasAuthority('READER')")
-    public ResponseEntity<Response> createProduct(@RequestParam (required = true) MultipartFile image,
-                                                  @RequestParam (required = true) String description,
+    public ResponseEntity<Response> createProduct(
+                                                  @RequestParam (required = false) String description,
                                                   @RequestParam (required = true) String name,
                                                   @RequestParam (required = true) BigDecimal price,
-                                                  @RequestParam (required = true) Integer stockQuantity
+                                                  @RequestParam (required = true) Integer stockQuantity,
+                                                  @RequestParam (required = false) String imageUrl,
+                                                  @RequestParam (required = false) String backgroundUrl,
+                                                  @RequestParam (required = true) Integer categoryId
                                                  ){
-                    return ResponseEntity.ok(productService.createProduct(image, name, description, price, stockQuantity));
+                    return ResponseEntity.ok(productService.createProduct( name, description, price, stockQuantity , imageUrl, backgroundUrl , categoryId));
     }
 
     @PutMapping("/update-product/{productId}")
     @PreAuthorize("hasAuthority('READER')")
     public ResponseEntity<Response> updateProduct(
         @PathVariable Integer productId, 
-        @RequestParam (required = false) MultipartFile image,
         @RequestParam (required = false) String description,
         @RequestParam (required = false) String name,
         @RequestParam (required = false) BigDecimal price ,
-        @RequestParam (required = false) Integer stockQuantity
+        @RequestParam (required = false) Integer stockQuantity,
+        @RequestParam (required = false) String imageUrl,
+        @RequestParam (required = false) String backgroundUrl,
+        @RequestParam (required = false) Integer categoryId
     ){
-        return ResponseEntity.ok(productService.updateProduct(productId, image, name, description, price , stockQuantity));
+        return ResponseEntity.ok(productService.updateProduct(productId, name, description, price , stockQuantity , imageUrl ,backgroundUrl, categoryId));
     }
 
 
@@ -61,7 +66,6 @@ public class ProductController {
     }
 
     @GetMapping("/get-product/{productId}")
-    @PreAuthorize("hasAuthority('READER')")
     public ResponseEntity<Response> getProductById(@PathVariable Integer productId){
         return ResponseEntity.ok(productService.findProductById(productId));
     }

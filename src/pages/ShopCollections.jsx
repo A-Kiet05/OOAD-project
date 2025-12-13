@@ -1,149 +1,143 @@
-import { useState, useMemo } from 'react';
+// src/components/ShopCollection.jsx (Đã chỉnh sửa)
+
+import { useState, useEffect, useMemo } from 'react';
 import { useParams, Link as RouterLink } from 'react-router-dom';
-import Box from '@mui/material/Box';
-import Card from '@mui/material/Card';
-import CardMedia from '@mui/material/CardMedia';
-import CardContent from '@mui/material/CardContent';
-import Button from '@mui/material/Button';
-import Typography from '@mui/material/Typography';
-import { products } from '../api/data';
+import { Box, Card, CardMedia, CardContent, Button, Typography, CircularProgress, Alert } from '@mui/material';
+import { getAllProductsApi, getAllCategoriesApi } from '../api/productApi'; // Import thêm getAllCategoriesApi
 import { formatVND } from '../utils/currency';
-import '../styles/shop.css';
+
+// Hàm chuyển tên category thành slug (ví dụ: "Tarot Deck" -> "tarot-deck")
+const toSlug = (text) => {
+    if (!text) return '';
+    return text
+        .toLowerCase()
+        .normalize("NFD") // Chuẩn hóa Unicode
+        .replace(/[\u0300-\u036f]/g, "") // Loại bỏ dấu
+        .replace(/đ/g, "d").replace(/Đ/g, "D") // Xử lý chữ Đ/đ
+        .replace(/\s+/g, '-') // Thay thế khoảng trắng bằng gạch ngang
+        .replace(/[^\w\-]+/g, '') // Loại bỏ tất cả ký tự không phải chữ, số, gạch ngang
+        .replace(/\-\-+/g, '-') // Thay thế nhiều gạch ngang bằng một
+        .replace(/^-+/, '').replace(/-+$/, ''); // Loại bỏ gạch ngang ở đầu và cuối
+};
 
 export default function ShopCollections() {
   const { category } = useParams();
   const [hoveredProduct, setHoveredProduct] = useState(null);
+  const [productsList, setProductsList] = useState([]);
+  const [categories, setCategories] = useState([]); // State mới để lưu categories
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // Map category from URL to filter
-  const getCategoryFilter = (cat) => {
-    const categoryMap = {
-      all: null,
-      tarot: 'tarot',
-      lenormand: 'lenormand',
-      accessories: 'accessories',
-      'new-arrivals': null,
-      sale: null,
+  // 1. Tải cả Products và Categories khi component được mount
+  useEffect(() => {
+    const loadData = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        // Tải danh sách Categories trước
+        const catRes = await getAllCategoriesApi();
+        if (catRes.status === 200 && catRes.categoryDTOs) {
+            setCategories(catRes.categoryDTOs);
+        } else {
+            console.warn("Failed to load categories.");
+        }
+
+        // Tải danh sách Products
+        const prodRes = await getAllProductsApi();
+        if (prodRes.status === 200 && prodRes.productList) {
+          setProductsList(prodRes.productList);
+        } else {
+          setError(prodRes.message || "Failed to load products.");
+        }
+      } catch (err) { 
+        console.error("Error loading shop data", err); 
+        setError("Network error or server connection failed.");
+      }
+      finally { 
+        setLoading(false); 
+      }
     };
-    return categoryMap[cat] ?? null;
-  };
+    loadData();
+  }, []);
 
-  // Filter products based on category
+  // 2. Tạo categoryMap động (slug -> categoryId)
+  const categoryMap = useMemo(() => {
+    const map = {};
+    categories.forEach(cat => {
+        // Tạo slug từ tên category (ví dụ: "Tarot" -> "tarot")
+        const slug = toSlug(cat.name);
+        map[slug] = cat.categoryID; // Lưu trữ: slug -> categoryId
+    });
+    return map;
+  }, [categories]);
+
+
+  // 3. Lọc sản phẩm dựa trên slug category từ URL
   const filteredProducts = useMemo(() => {
-    const catFilter = getCategoryFilter(category);
-    // Lưu ý: Nếu URL là 'new-arrivals' hoặc 'sale', bạn có thể cần logic lọc bổ sung
-    // Hiện tại, nếu catFilter là null, nó trả về TẤT CẢ sản phẩm.
-    if (!catFilter) return products;
-    return products.filter((p) => p.category === catFilter);
-  }, [category]);
+    // Nếu category là 'all' hoặc không có category nào trong URL, trả về tất cả
+    if (!category || category === 'all') return productsList;
+    
+    // Lấy ID Category từ map động
+    const targetId = categoryMap[category.toLowerCase()]; 
+    
+    if (!targetId) return productsList; // Nếu slug không khớp, trả về tất cả (hoặc mảng rỗng tùy logic)
+
+    // Lọc theo categoryId trong ProductDTO
+    return productsList.filter(p => p.categoryDTO?.categoryID === targetId);
+  }, [category, productsList, categoryMap]);
+
+  if (loading) return <Box sx={{ display: 'flex', justifyContent: 'center', py: 10 }}><CircularProgress /></Box>;
+  if (error) return <Box sx={{ p: 4, maxWidth: '1400px', margin: '0 auto' }}><Alert severity="error">{error}</Alert></Box>;
+  if (filteredProducts.length === 0 && !category || category === 'all' && productsList.length === 0) return <Typography sx={{ textAlign: 'center', py: 10 }}>Chưa có sản phẩm nào được thêm.</Typography>;
+  if (filteredProducts.length === 0 && category && category !== 'all') return <Typography sx={{ textAlign: 'center', py: 10 }}>Không tìm thấy sản phẩm nào trong danh mục **{category.toUpperCase().replace('-', ' ')}**.</Typography>;
+
 
   return (
     <Box sx={{ p: 4, minHeight: '80vh' }}>
-      {/* Category Title */}
-      <Typography
-        variant="h4"
-        sx={{
-          textTransform: 'uppercase',
-          fontWeight: 700,
-          letterSpacing: '0.08em',
-          mb: 4,
-          textAlign: 'center',
-          fontStyle: 'italic',
-        }}
-      >
+      <Typography variant="h4" sx={{ textTransform: 'uppercase', fontWeight: 700, mb: 4, textAlign: 'center' }}>
         {category ? category.toUpperCase().replace('-', ' ') : 'SHOP ALL'}
       </Typography>
 
-      {/* Products Grid */}
-      <Box
-        sx={{
-          display: 'grid',
-          gridTemplateColumns: { xs: 'repeat(1, 1fr)', sm: 'repeat(2, 1fr)', md: 'repeat(4, 1fr)' },
-          gap: 2,
-          maxWidth: '1400px',
-          margin: '0 auto',
-        }}
-      >
+      <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: 'repeat(4, 1fr)' }, gap: 2, maxWidth: '1400px', margin: '0 auto' }}>
         {filteredProducts.map((product) => (
-          <Card
-            key={product.id}
-            sx={{
-              position: 'relative',
-              overflow: 'hidden',
-              cursor: 'pointer',
-              transition: 'transform 0.3s ease, box-shadow 0.3s ease',
-              '&:hover': {
-                boxShadow: '0 8px 16px rgba(0,0,0,0.1)',
-              },
-            }}
-            onMouseEnter={() => setHoveredProduct(product.id)}
-            onMouseLeave={() => setHoveredProduct(null)}
+          <Card key={product.productID} 
+                onMouseEnter={() => setHoveredProduct(product.productID)} 
+                onMouseLeave={() => setHoveredProduct(null)}
+                sx={{ transition: 'box-shadow 0.3s', '&:hover': { boxShadow: 6 } }}
           >
-            {/* Product Image Container */}
-            <RouterLink to={`/shop/product/${product.id}`} style={{ textDecoration: 'none', display: 'block' }}>
-              <Box sx={{ position: 'relative', overflow: 'hidden', height: '350px' }}>
-                <CardMedia
-                  component="img"
-                  image={product.image}
+            <RouterLink to={`/shop/product/${product.productID}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+              <Box sx={{ position: 'relative', height: '350px', overflow: 'hidden' }}>
+                <CardMedia 
+                  component="img" 
+                  image={product.imageUrl} 
                   alt={product.name}
-                  sx={{
-                    height: '100%',
-                    objectFit: 'cover',
-                    transition: 'opacity 0.3s ease',
-                    opacity: hoveredProduct === product.id ? 0 : 1,
-                  }}
+                  sx={{ height: '100%', objectFit: 'cover', transition: 'opacity 0.5s', 
+                        opacity: hoveredProduct === product.productID ? 0 : 1 }} 
                 />
-
-                <CardMedia
-                  component="img"
-                  image={product.image2}
-                  alt={`${product.name} (detail)`}
-                  sx={{
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    height: '100%',
-                    objectFit: 'cover',
-                    transition: 'opacity 0.3s ease',
-                    opacity: hoveredProduct === product.id ? 1 : 0,
-                    width: '100%',
-                  }}
+                <CardMedia 
+                  component="img" 
+                  image={product.backgroundUrl || product.imageUrl} 
+                  alt={`${product.name} detail`}
+                  sx={{ position: 'absolute', top: 0, width: '100%', height: '100%', objectFit: 'cover', transition: 'opacity 0.5s', 
+                        opacity: hoveredProduct === product.productID ? 1 : 0 }} 
                 />
-
-                {hoveredProduct === product.id && (
-                  <Box sx={{ position: 'absolute', bottom: 16, left: '50%', transform: 'translateX(-50%)', zIndex: 10 }}>
-                    <Button variant="contained" sx={{ bgcolor: '#FF9500', color: '#fff', textTransform: 'uppercase', px: 3, fontFamily: 'Space Grotesk, sans-serif' }}>VIEW ITEM</Button>
-                  </Box>
+                {hoveredProduct === product.productID && (
+                  <Button variant="contained" sx={{ position: 'absolute', bottom: 16, left: '50%', transform: 'translateX(-50%)', bgcolor: '#FF9500', transition: '0.3s' }}>
+                    VIEW ITEM
+                  </Button>
                 )}
               </Box>
             </RouterLink>
-
-            {/* Product Info - Clickable */}
-            <RouterLink to={`/shop/product/${product.id}`} style={{ textDecoration: 'none', display: 'block', color: 'inherit' }}>
-              <CardContent sx={{ textAlign: 'center', py: 2, bgcolor: '#fff' }}>
-                <Typography variant="body2" sx={{ fontFamily: 'Space Grotesk, sans-serif', textTransform: 'uppercase', fontWeight: 600, fontSize: '0.85rem', letterSpacing: '0.04em', mb: 1, fontStyle: 'italic' }}>
-                  {product.category.toUpperCase()}
-                </Typography>
-                <Typography sx={{ fontFamily: 'Montserrat, sans-serif',fontWeight: 700, fontSize: '1rem', mb: 1 }}>{product.name}</Typography>
-                
-                {/* ĐÃ SỬA: Áp dụng hàm định dạng tiền tệ */}
-                <Typography sx={{ fontWeight: 600, fontSize: '0.9rem', color: '#FF9500' }}>
-                  {formatVND(product.price)}
-                </Typography>
-              </CardContent>
-            </RouterLink>
+            <CardContent sx={{ textAlign: 'center' }}>
+              <Typography variant="caption" sx={{ fontWeight: 700, color: '#666' }}>
+                {product.categoryDTO?.name?.toUpperCase() || "MYSTIC"}
+              </Typography>
+              <Typography sx={{ fontWeight: 700, my: 1, height: '2.5rem', overflow: 'hidden' }}>{product.name}</Typography>
+              <Typography sx={{ fontWeight: 600, color: '#FF9500' }}>{formatVND(product.price)}</Typography>
+            </CardContent>
           </Card>
         ))}
       </Box>
-
-      {/* Empty State */}
-      {filteredProducts.length === 0 && (
-        <Box sx={{ textAlign: 'center', py: 8 }}>
-          <Typography variant="h5" sx={{ mb: 2 }}>No products found</Typography>
-          <RouterLink to="/shop" style={{ textDecoration: 'none' }}>
-            <Button variant="contained">Back to Shop</Button>
-          </RouterLink>
-        </Box>
-      )}
     </Box>
   );
 }

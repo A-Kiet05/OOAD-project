@@ -8,7 +8,7 @@ import org.springframework.data.annotation.Id;
 
 import com.backend.mysticshop.domain.entities.CartItems;
 import com.backend.mysticshop.domain.entities.OrderDetails;
-import com.backend.mysticshop.domain.entities.Review;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
@@ -36,7 +36,8 @@ public class ProductDTO {
     private Double price;
     private Integer stockQuantity;
     private String imageUrl;
-    // private List<ReviewDTO> reviews = new ArrayList<>();
+    private String backgroundUrl;
+    private CategoryDTO categoryDTO;
     // private List<CartItemsDTO> cartItems = new ArrayList<>();
     // private List<OrderDetailsDTO> orderDetails = new ArrayList<>();
 }
