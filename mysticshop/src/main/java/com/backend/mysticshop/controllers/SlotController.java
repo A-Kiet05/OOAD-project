@@ -60,11 +60,12 @@ public class SlotController {
    } 
 
     @GetMapping("/get-by-readerId-and-status")
+    @PreAuthorize(" hasAuthority('READER')")
     public ResponseEntity<Response> findSlotByReaderIdAndStatus(
-        @RequestParam (required = true) String status ,
-        @RequestParam (required = true) Integer readerID
+        @RequestParam (required = true) String status 
+        
     ){
-        return ResponseEntity.ok(slotService.findSlotByReaderIdAndStatus(readerID, status));
+        return ResponseEntity.ok(slotService.findSlotByReaderIdAndStatus(status));
     }
     
     @GetMapping("/get-avaiSlot-by-time-and-readerId")

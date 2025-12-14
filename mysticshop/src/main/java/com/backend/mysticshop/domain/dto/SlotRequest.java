@@ -15,6 +15,6 @@ public class SlotRequest {
     private LocalDate date;
     private LocalTime startTime;
     private LocalTime endTime;
-    private ReaderStatus readerStatus;
+    
     
 }

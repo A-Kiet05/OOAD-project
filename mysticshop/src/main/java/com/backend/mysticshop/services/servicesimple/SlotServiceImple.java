@@ -42,7 +42,7 @@ public class SlotServiceImple implements SlotService{
     public Response createSlot(SlotRequest slotRequest){
            
         User user = userService.getLogin();
-        if( user != null && !user.getRole().toString().equals("READER")){
+        if( user == null || !user.getRole().toString().equals("READER")){
             throw new IllegalArgumentException("Only Reader can create slots!");
         }
 
@@ -161,9 +161,11 @@ public class SlotServiceImple implements SlotService{
     }
 
     @Override
-    public Response findSlotByReaderIdAndStatus(Integer readerID , String status){
+    public Response findSlotByReaderIdAndStatus( String status){
+         
+        User user = userService.getLogin();
              
-             List<AvailableSlotDTO> slotDTOs = availableSlotRepository.findByReaderUserIDAndReaderStatus(readerID, ReaderStatus.valueOf(status.toUpperCase()))
+             List<AvailableSlotDTO> slotDTOs = availableSlotRepository.findByReaderUserIDAndReaderStatus(user.getUserID(), ReaderStatus.valueOf(status.toUpperCase()))
                                                                       .stream()
                                                                       .map(availabilitySlotMapper::mapTo)
                                                                       .collect(Collectors.toList());
