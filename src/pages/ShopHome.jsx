@@ -62,13 +62,13 @@ export default function ShopHome() {
       title: "TAROT",
       image:
         "https://res.cloudinary.com/drmcnkjkn/image/upload/v1764470454/TarotCategory_eoy06l.jpg",
-      link: "/shop/tarot",
+      link: "/shop/collection/tarot",
     },
     {
       title: "LENORMAND",
       image:
         "https://res.cloudinary.com/drmcnkjkn/image/upload/v1764470453/LenormandCategory_qeb7hw.jpg",
-      link: "/shop/lenormand",
+      link: "/shop/collection/lenormand",
     },
   ];
 

@@ -52,7 +52,7 @@ export const createSlotApi = async ({ date, startTime, endTime }) => {
  * =========================
  */
 export const getSlotsByReaderAndStatus = async (status) => {
-  return slotApi.get("/get-by-readerId-and-status", {
+  return slotApi.get("/get-slot-by-reader", {
     params: { status },
   });
 };

@@ -6,7 +6,7 @@ import { Box, Card, CardMedia, CardContent, Button, Typography, CircularProgress
 import { getAllProductsApi, getAllCategoriesApi } from '../api/productApi'; // Import thêm getAllCategoriesApi
 import { formatVND } from '../utils/currency';
 
-// Hàm chuyển tên category thành slug (ví dụ: "Tarot Deck" -> "tarot-deck")
+
 const toSlug = (text) => {
     if (!text) return '';
     return text
@@ -24,17 +24,17 @@ export default function ShopCollections() {
   const { category } = useParams();
   const [hoveredProduct, setHoveredProduct] = useState(null);
   const [productsList, setProductsList] = useState([]);
-  const [categories, setCategories] = useState([]); // State mới để lưu categories
+  const [categories, setCategories] = useState([]); // new state
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // 1. Tải cả Products và Categories khi component được mount
+  
   useEffect(() => {
     const loadData = async () => {
       setLoading(true);
       setError(null);
       try {
-        // Tải danh sách Categories trước
+        // load category list
         const catRes = await getAllCategoriesApi();
         if (catRes.status === 200 && catRes.categoryDTOs) {
             setCategories(catRes.categoryDTOs);
@@ -42,7 +42,7 @@ export default function ShopCollections() {
             console.warn("Failed to load categories.");
         }
 
-        // Tải danh sách Products
+        // load product list
         const prodRes = await getAllProductsApi();
         if (prodRes.status === 200 && prodRes.productList) {
           setProductsList(prodRes.productList);
@@ -60,30 +60,30 @@ export default function ShopCollections() {
     loadData();
   }, []);
 
-  // 2. Tạo categoryMap động (slug -> categoryId)
+  // 2. create category ( slug -> categoryID)
   const categoryMap = useMemo(() => {
     const map = {};
     categories.forEach(cat => {
-        // Tạo slug từ tên category (ví dụ: "Tarot" -> "tarot")
+        
         const slug = toSlug(cat.name);
-        map[slug] = cat.categoryID; // Lưu trữ: slug -> categoryId
+        map[slug] = cat.categoryID; 
     });
     return map;
   }, [categories]);
 
-
-  // 3. Lọc sản phẩm dựa trên slug category từ URL
+    
+  // 3.filter product based on slug 
   const filteredProducts = useMemo(() => {
-    // Nếu category là 'all' hoặc không có category nào trong URL, trả về tất cả
+    
     if (!category || category === 'all') return productsList;
     
-    // Lấy ID Category từ map động
+   
     const targetId = categoryMap[category.toLowerCase()]; 
     
-    if (!targetId) return productsList; // Nếu slug không khớp, trả về tất cả (hoặc mảng rỗng tùy logic)
+    if (!targetId) return productsList; 
 
-    // Lọc theo categoryId trong ProductDTO
-    return productsList.filter(p => p.categoryDTO?.categoryID === targetId);
+    
+    return productsList.filter(p => p.category?.categoryID === targetId);
   }, [category, productsList, categoryMap]);
 
   if (loading) return <Box sx={{ display: 'flex', justifyContent: 'center', py: 10 }}><CircularProgress /></Box>;

@@ -33,9 +33,13 @@ createRoot(document.getElementById('root')).render(
             <Route path="reader-schedule" element={<ReaderSchedulePage />} />
           </Route>
 
-          <Route path="/shop" element={<ShopLayout><ShopHome /></ShopLayout>} />
-          <Route path="/shop/:category" element={<ShopLayout><ShopCollections /></ShopLayout>} />
-          <Route path="/shop/product/:id" element={<ShopLayout><ProductDetail /></ShopLayout>} />
+            <Route path="/shop" element={<ShopLayout />}>
+        <Route index element={<ShopHome />} />
+        <Route path="collection/:category" element={<ShopCollections />} />
+        <Route path="product/:id" element={<ProductDetail />} />
+      </Route>
+
+        
 
           {/* 404 catch-all */}
           <Route path="*" element={<main style={{padding:16}}>Page not found</main>} />

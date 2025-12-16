@@ -161,11 +161,11 @@ public class SlotServiceImple implements SlotService{
     }
 
     @Override
-    public Response findSlotByReaderIdAndStatus( String status){
+    public Response findSlotByReaderIdAndStatus( Integer readerId , String status){
          
-        User user = userService.getLogin();
+  
              
-             List<AvailableSlotDTO> slotDTOs = availableSlotRepository.findByReaderUserIDAndReaderStatus(user.getUserID(), ReaderStatus.valueOf(status.toUpperCase()))
+             List<AvailableSlotDTO> slotDTOs = availableSlotRepository.findByReaderUserIDAndReaderStatus(readerId, ReaderStatus.valueOf(status.toUpperCase()))
                                                                       .stream()
                                                                       .map(availabilitySlotMapper::mapTo)
                                                                       .collect(Collectors.toList());
@@ -206,6 +206,23 @@ public class SlotServiceImple implements SlotService{
                         .status(200)
                         .availableSlotDTO(slotDTO)
                         .build();
+    }
+
+    @Override
+    public Response findSlotByReaderAndStatus(String status){
+
+
+        User user = userService.getLogin();
+             
+             List<AvailableSlotDTO> slotDTOs = availableSlotRepository.findByReaderUserIDAndReaderStatus(user.getUserID(), ReaderStatus.valueOf(status.toUpperCase()))
+                                                                      .stream()
+                                                                      .map(availabilitySlotMapper::mapTo)
+                                                                      .collect(Collectors.toList());
+                                                                
+            return Response.builder()
+                           .status(200)
+                           .availableSlotDTOList(slotDTOs)
+                           .build();
     }
 
 }

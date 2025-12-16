@@ -37,7 +37,7 @@ public class ProductDTO {
     private Integer stockQuantity;
     private String imageUrl;
     private String backgroundUrl;
-    private CategoryDTO categoryDTO;
+    private CategoryDTO category;
     // private List<CartItemsDTO> cartItems = new ArrayList<>();
     // private List<OrderDetailsDTO> orderDetails = new ArrayList<>();
 }

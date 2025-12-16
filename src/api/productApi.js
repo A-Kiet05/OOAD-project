@@ -4,7 +4,7 @@ const BASE_URL = 'http://localhost:8081/product';
 
 export const getAllProductsApi = async () => {
     const response = await axios.get(`${BASE_URL}/get-all-product`);
-    return response.data; // Trả về đối tượng Response.java
+    return response.data; 
 };
 
 export const getProductByIdApi = async (productId) => {

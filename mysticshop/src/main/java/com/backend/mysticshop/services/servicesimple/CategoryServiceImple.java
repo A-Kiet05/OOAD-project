@@ -44,7 +44,7 @@ public class CategoryServiceImple implements CategoryService {
     @Override
     public Response getAll(){
               
-        List<CategoryDTO> categoryDTOs = categoryRepository.findAll(Sort.by(Sort.Direction.DESC  , "categoryId"))
+        List<CategoryDTO> categoryDTOs = categoryRepository.findAll(Sort.by(Sort.Direction.DESC  , "categoryID"))
                                                            .stream()
                                                            .map(cateMapper::mapTo)
                                                            .collect(Collectors.toList());
