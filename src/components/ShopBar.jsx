@@ -9,6 +9,13 @@ import SearchIcon from "@mui/icons-material/Search";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import CloseIcon from "@mui/icons-material/Close";
 import Paper from "@mui/material/Paper";
+import Radio from "@mui/material/Radio";
+import RadioGroup from "@mui/material/RadioGroup";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import FormControl from "@mui/material/FormControl";
+import InputLabel from "@mui/material/InputLabel";
+import MenuItem from "@mui/material/MenuItem";
+import Select from "@mui/material/Select";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemText from "@mui/material/ListItemText";
@@ -66,6 +73,17 @@ export default function ShopBar() {
   const [hoverMenu, setHoverMenu] = useState(null);
   const [searchSuggestions, setSearchSuggestions] = useState([]);
   const [categories, setCategories] = useState([]);
+  const [checkoutMode, setCheckoutMode] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState("COD");
+  const [shippingMethod, setShippingMethod] = useState("standard");
+  const [address, setAddress] = useState("");
+  const [phone, setPhone] = useState("");
+
+  const shopMenuItems = {
+    SHOP: ["SHOP ALL", ...categories.map((c) => c.name.toUpperCase())],
+    COLLECTIONS: ["NEW ARRIVALS", "SALE"],
+    MORE: ["CONTACTS"],
+  };
 
   /* ========= LOAD CATEGORIES ========= */
   useEffect(() => {
@@ -82,11 +100,12 @@ export default function ShopBar() {
     loadCategories();
   }, []);
 
-  const shopMenuItems = {
-    SHOP: ["SHOP ALL", ...categories.map((c) => c.name.toUpperCase())],
-    COLLECTIONS: ["NEW ARRIVALS", "SALE"],
-    MORE: ["CONTACTS"],
-  };
+  // reset checkout form if drawer is closed
+  useEffect(() => {
+    if (!isCartSidebarOpen) {
+      setCheckoutMode(false);
+    }
+  }, [isCartSidebarOpen]);
 
   /* ========= SEARCH ========= */
   const handleSearchChange = async (e) => {
@@ -372,20 +391,82 @@ export default function ShopBar() {
           </Box>
 
           <Box sx={{ borderTop: "1px solid #ddd", pt: 2 }}>
-            <Box
-              sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}
-            >
+            <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
               <strong>SUBTOTAL</strong>
               <strong>{formatVND(getTotalPrice())}</strong>
             </Box>
-            <Button
-              fullWidth
-              variant="contained"
-              disabled={cartItems.length === 0}
-              sx={{ bgcolor: "#FF9500", py: 1.5 }}
-            >
-              CHECKOUT
-            </Button>
+
+            {!checkoutMode ? (
+              <Button
+                fullWidth
+                variant="contained"
+                disabled={cartItems.length === 0}
+                sx={{ bgcolor: "#FF9500", py: 1.5 }}
+                onClick={() => setCheckoutMode(true)}
+              >
+                CHECKOUT
+              </Button>
+            ) : (
+              <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                <FormControl component="fieldset">
+                  <InputLabel shrink sx={{ mb: 0.5 }}>Payment method</InputLabel>
+                  <RadioGroup value={paymentMethod} onChange={(e) => setPaymentMethod(e.target.value)}>
+                    <FormControlLabel value="COD" control={<Radio />} label="Cash on Delivery (COD)" />
+                    <FormControlLabel value="ZaloPay" control={<Radio />} label="ZaloPay" />
+                    <FormControlLabel value="Momo" control={<Radio />} label="Momo" />
+                    <FormControlLabel value="Bank" control={<Radio />} label="Bank transfer" />
+                  </RadioGroup>
+                </FormControl>
+
+                <FormControl fullWidth>
+                  <InputLabel id="shipping-method-label">Shipping method</InputLabel>
+                  <Select
+                    labelId="shipping-method-label"
+                    value={shippingMethod}
+                    label="Shipping method"
+                    onChange={(e) => setShippingMethod(e.target.value)}
+                  >
+                    <MenuItem value="standard">Standard</MenuItem>
+                    <MenuItem value="express">Express</MenuItem>
+                  </Select>
+                </FormControl>
+
+                <TextField
+                  label="Shipping address"
+                  multiline
+                  minRows={2}
+                  fullWidth
+                  value={address}
+                  onChange={(e) => setAddress(e.target.value)}
+                />
+
+                <TextField label="Phone number" fullWidth value={phone} onChange={(e) => setPhone(e.target.value)} />
+
+                <Box sx={{ display: "flex", gap: 1 }}>
+                  <Button variant="outlined" fullWidth onClick={() => setCheckoutMode(false)}>
+                    Back to cart
+                  </Button>
+
+                  <Button
+                    variant="contained"
+                    fullWidth
+                    sx={{ bgcolor: "#FF9500" }}
+                    onClick={() => {
+                      if (!address || !phone) {
+                        alert("Please provide shipping address and phone number.");
+                        return;
+                      }
+                      // placeholder: place order
+                      alert(`Order placed. Payment: ${paymentMethod}, Shipping: ${shippingMethod}`);
+                      setCheckoutMode(false);
+                      closeCartSidebar();
+                    }}
+                  >
+                    Place order
+                  </Button>
+                </Box>
+              </Box>
+            )}
           </Box>
         </Box>
       </Drawer>
