@@ -21,7 +21,7 @@ You are a Lenormand reader.
 User's question: "${prompt}"
 Three cards drawn: ${cards.join(", ")}
 
-Write a concise interpretation in English, no more than 50 words.
+Write a concise interpretation in Vietnamese, no more than 50 words.
 Focus only on the core message.
 Avoid long introductions or filler sentences.`;
 
