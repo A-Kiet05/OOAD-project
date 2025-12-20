@@ -31,7 +31,7 @@ const formatTimeForDb = (timeStr) => {
 
 export default function BookingForm() {
   // --- STATE ---
-  const [allReaders, setAllReaders] = useState([]); // Danh sách Reader lấy từ API
+  const [allReaders, setAllReaders] = useState([]); 
   const [selectedReaderId, setSelectedReaderId] = useState(null);
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedTimeRange, setSelectedTimeRange] = useState("");
@@ -41,7 +41,7 @@ export default function BookingForm() {
   const [notes, setNotes] = useState("");
   const [overlay, setOverlay] = useState({ show: false, message: "", type: "info" });
   
-  // Khung giờ cố định hiển thị trên UI (đã sửa theo format 59 phút của bạn)
+  // Khung giờ cố định hiển thị trên UI 
   const uiTimeSlots = [
     "06:00-06:59", "07:00-07:59", "08:00-08:59", "09:00-09:59",
     "10:00-10:59", "11:00-11:59", "13:00-13:59", "14:00-14:59",
@@ -115,7 +115,7 @@ export default function BookingForm() {
     };
 
     fetchSlots();
-    setSelectedTimeRange(""); // Reset giờ khi đổi ngày/reader
+    setSelectedTimeRange(""); // Reset 
   }, [selectedReaderId, selectedDate]);
 
 
@@ -151,10 +151,10 @@ export default function BookingForm() {
       
       const [startRaw, endRaw] = selectedTimeRange.split("-");
       
-      // Payload khớp với AppointmentRequest DTO của Java
+      
       const payload = {
-        // Chúng ta cần đảm bảo Backend tự tìm slotID dựa trên 3 trường này.
-        // Nếu Backend cần slotID, cần phải sửa lại logic này.
+        
+       
         readerId: selectedReaderId, // Truyền Reader ID để Backend xác định đúng Slot
         bookingDate: selectedDate,
         startTime: formatTimeForDb(startRaw),
@@ -163,7 +163,7 @@ export default function BookingForm() {
       };
 
       // Gọi API AppointmentController
-      // Giả sử API này (create-appointment) có thể tự tìm slotID dựa trên ReaderId, Date, StartTime, EndTime
+     
       const res = await axios.post(`${BASE_URL}/appointments/create-appointment`, payload);
 
       if (res.data.status === 200) {

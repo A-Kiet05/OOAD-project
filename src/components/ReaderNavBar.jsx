@@ -5,12 +5,13 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
+import SupervisorAccountIcon from "@mui/icons-material/SupervisorAccount";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import { Link as RouterLink, useNavigate } from "react-router-dom";
+import { Link as RouterLink } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
 
-export default function ReaderNavBar() {
+export default function NavBar() {
   const navBtnSx = {
     transition:
       "transform 260ms cubic-bezier(.34,1.56,.64,1), opacity 200ms ease",
@@ -24,14 +25,12 @@ export default function ReaderNavBar() {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
   const { user, logout } = useAuth();
-  const navigate = useNavigate();
 
   const handleClick = (event) => setAnchorEl(event.currentTarget);
   const handleClose = () => setAnchorEl(null);
   const handleLogout = () => {
     logout();
     handleClose();
-    navigate("/");
   };
 
   return (
@@ -57,7 +56,7 @@ export default function ReaderNavBar() {
           justifyContent: "space-between",
         }}
       >
-        {/* Logo */}
+        {/* Logo + title */}
         <Box sx={{ display: "flex", alignItems: "center", gap: "10px" }}>
           <IconButton
             component={RouterLink}
@@ -80,64 +79,130 @@ export default function ReaderNavBar() {
               style={{ width: "100%", height: "100%", objectFit: "contain" }}
             />
           </IconButton>
-        </Box>
 
-        {/* Right section: Reader info + Logout button */}
-        <Box sx={{ display: "flex", alignItems: "center", gap: 2, paddingRight: 5 }}>
-          {/* Reader name and avatar */}
-          {user && (
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-              <Typography
-                sx={{
-                  fontSize: "0.9rem",
-                  fontWeight: 600,
-                  color: "#fff",
-                  textAlign: "right",
-                }}
-              >
-                {user.fullName}
-              </Typography>
-              <Box
-                sx={{
-                  width: 40,
-                  height: 40,
-                  borderRadius: "50%",
-                  bgcolor: "#E0F778",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  color: "#000",
-                  fontWeight: 700,
-                  textTransform: "uppercase",
-                  fontSize: "0.9rem",
-                }}
-              >
-                {user.fullName ? user.fullName.charAt(0) : "R"}
-              </Box>
-            </Box>
-          )}
-
-          {/* Logout button */}
-          <Button
-            onClick={handleLogout}
+          <Typography
+            component={RouterLink}
+            to="/"
             sx={{
-              color: "#fff",
-              borderColor: "#E0F778",
-              border: "1px solid #E0F778",
-              fontWeight: 600,
-              fontSize: "0.85rem",
-              textTransform: "none",
-              px: 2,
-              py: 0.7,
+              fontSize: 14,
+              fontWeight: 500,
+              letterSpacing: "0.08em",
+              cursor: "pointer",
+              textDecoration: "none",
+              color: "inherit",
               ...navBtnSx,
-              "&:hover": {
-                bgcolor: "rgba(224, 247, 120, 0.1)",
-                borderColor: "#E0F778",
-              },
+              "&:hover": { opacity: 0.6, transform: "scale(1.05)" },
             }}
           >
-            Log Out
+            THE ORACLE ALGORITHM
+          </Typography>
+        </Box>
+
+        {/* Nav links + user */}
+        <Box sx={{ display: { xs: "none", sm: "flex" }, gap: "25px", alignItems: "center" }}>
+          <Button
+            component={RouterLink}
+            to="/shop"
+            color="inherit"
+            sx={{ ...navBtnSx, fontSize: "0.94rem", letterSpacing: "0.06em", fontWeight: 400 }}
+          >
+            SHOPPING
           </Button>
+          <Button
+            component={RouterLink}
+            to="/reader-schedule"
+            color="inherit"
+            sx={{ ...navBtnSx, fontSize: "0.94rem", letterSpacing: "0.06em", fontWeight: 400 }}
+          >
+            BOOKING
+          </Button>
+          <Button
+            component={RouterLink}
+            to="/reading"
+            color="inherit"
+            sx={{ ...navBtnSx, fontSize: "0.94rem", letterSpacing: "0.06em", fontWeight: 400 }}
+          >
+            READING
+          </Button>
+
+          {/* User dropdown */}
+          <Box>
+            <IconButton
+              sx={{ color: "#fff", ...navBtnSx, paddingRight: "25px" }}
+              aria-controls={open ? "user-menu" : undefined}
+              aria-haspopup="true"
+              onClick={handleClick}
+            >
+              {user ? (
+                <Box
+                  sx={{
+                    width: 34,
+                    height: 34,
+                    borderRadius: "50%",
+                    bgcolor: "#E0F778",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    color: "#000",
+                    fontWeight: 700,
+                    textTransform: "uppercase",
+                  }}
+                >
+                  {user.fullName ? user.fullName.charAt(0) : "U"}
+                </Box>
+              ) : (
+                <SupervisorAccountIcon />
+              )}
+            </IconButton>
+
+            <Menu
+              id="user-menu"
+              anchorEl={anchorEl}
+              open={open}
+              onClose={handleClose}
+              anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+              transformOrigin={{ vertical: "top", horizontal: "right" }}
+              disableScrollLock
+              PaperProps={{
+                sx: {
+                  bgcolor: "#1E1E1E",
+                  color: "#fff",
+                  minWidth: 140,
+                  borderRadius: 1,
+                  p: 0,
+                },
+              }}
+              MenuListProps={{ sx: { p: 0 } }}
+            >
+              {!user ? (
+                <>
+                  <MenuItem
+                    component={RouterLink}
+                    to="/auth"
+                    onClick={handleClose}
+                    sx={{ "&:hover": { bgcolor: "#E0F778", color: "#000" }, fontWeight: 700 }}
+                  >
+                    Login
+                  </MenuItem>
+                  <MenuItem
+                    component={RouterLink}
+                    to="/auth"
+                    onClick={handleClose}
+                    sx={{ "&:hover": { bgcolor: "#E0F778", color: "#000" }, fontWeight: 700 }}
+                  >
+                    Sign Up
+                  </MenuItem>
+                </>
+              ) : (
+                <MenuItem
+                  onClick={handleLogout}
+                  sx={{ "&:hover": { bgcolor: "#E0F778", color: "#000" }, fontWeight: 700 }}
+                >
+                  Log Out
+                </MenuItem>
+              )}
+            </Menu>
+          </Box>
         </Box>
       </Toolbar>
     </AppBar>
