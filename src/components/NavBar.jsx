@@ -175,16 +175,18 @@ export default function NavBar() {
               MenuListProps={{ sx: { p: 0 } }}
             >
               {!user ? (
-                <>
+                [
                   <MenuItem
+                    key="login"
                     component={RouterLink}
                     to="/auth"
                     onClick={handleClose}
                     sx={{ "&:hover": { bgcolor: "#E0F778", color: "#000" }, fontWeight: 700 }}
                   >
                     Login
-                  </MenuItem>
+                  </MenuItem>,
                   <MenuItem
+                    key="signup"
                     component={RouterLink}
                     to="/auth"
                     onClick={handleClose}
@@ -192,7 +194,7 @@ export default function NavBar() {
                   >
                     Sign Up
                   </MenuItem>
-                </>
+                ]
               ) : (
                 <MenuItem
                   onClick={handleLogout}
