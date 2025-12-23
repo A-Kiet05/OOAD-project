@@ -84,7 +84,6 @@ export const CartProvider = ({ children }) => {
                 clearCart,
                 getTotalItems,
                 getTotalPrice,
-                // EXPORT CÁC HÀM UI MỚI
                 isCartSidebarOpen,
                 openCartSidebar,
                 closeCartSidebar

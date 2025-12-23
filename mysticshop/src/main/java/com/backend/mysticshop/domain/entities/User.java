@@ -74,8 +74,8 @@ public class User {
     private List<CartItems> cartItems ;
 
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<AIChatSession> aiChatSessions;
+    // @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    // private List<AIChatSession> aiChatSessions;
 
     @OneToMany(mappedBy = "reader" , cascade = CascadeType.ALL)
     private List<AvalabilitySlots> avalabilitySlots ;

@@ -19,7 +19,7 @@ export const searchProductApi = async (searchValue) => {
     return response.data;
 };
 
-// Gọi API lấy Category (Bạn đã tạo ReaderController, hãy đảm bảo có CategoryController tương tự)
+// api get all category 
 export const getAllCategoriesApi = async () => {
     const response = await axios.get('http://localhost:8081/category/get-all');
     return response.data;

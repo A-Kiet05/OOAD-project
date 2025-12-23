@@ -62,7 +62,7 @@ public class Appointment {
     @Column(name = "booking_date" , nullable = false)
     private LocalDate bookingDate;
 
-    @ManyToOne (fetch = FetchType.LAZY)
+    @OneToOne (fetch = FetchType.LAZY)
     @JoinColumn(name = "slot_id" , unique = true , nullable = false)
     private AvalabilitySlots avalabilitySlots;
 

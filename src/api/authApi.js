@@ -1,11 +1,11 @@
 // src/api/authApi.js (Thay thế cho mockAuth.js)
 import axios from 'axios';
 
-// Đảm bảo BASE_URL là cổng của Spring Boot (8081)
+
 const BASE_URL = 'http://localhost:8081/auth'; 
 
 /**
- * Hàm gọi API Đăng nhập
+ 
  * @param {string} email
  * @param {string} password
  * @returns Promise<UserObject & { token: string }>
@@ -42,19 +42,17 @@ export const loginApi = async (email, password) => {
         localStorage.setItem("currentUser", JSON.stringify(user)); // Lưu user object vào Local Storage
         axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
-        // Trả về đối tượng user đã tạo
+        
         return user;
         
     } catch (error) {
-        // ... (xử lý lỗi)
+      
         const errorMessage = error.response?.data?.message || error.message;
         throw new Error(errorMessage);
     }
 };
 
-/**
- * Hàm gọi API Đăng ký
- */
+
 export const signupApi = async (username, fullName, email, password) => { 
     try {
         const response = await axios.post(`${BASE_URL}/register`, {
@@ -85,5 +83,5 @@ export const setupAxiosToken = () => {
     return false;
 };
 
-// Hàm khởi tạo cũ không cần dùng nữa
-export const initMockUsers = () => { /* Không làm gì */ };
+
+export const initMockUsers = () => {  };

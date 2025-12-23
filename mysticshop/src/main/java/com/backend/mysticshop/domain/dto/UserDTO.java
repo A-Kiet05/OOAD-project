@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import com.backend.mysticshop.domain.entities.AIChatSession;
+
 import com.backend.mysticshop.domain.entities.Appointment;
 import com.backend.mysticshop.domain.entities.AvalabilitySlots;
 import com.backend.mysticshop.domain.entities.CartItems;

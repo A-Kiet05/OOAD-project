@@ -1,4 +1,5 @@
 // Mock product data
+//use for purpose of testing the data
 export const products = [
   {
     id: 1,

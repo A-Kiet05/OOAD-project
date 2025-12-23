@@ -51,7 +51,7 @@ const resolveMenuLink = (menu, item) => {
     return "/contact";
   }
 
-  // COLLECTIONS chưa có page → không link
+  // COLLECTIONS chưa có page = không link
   return null;
 };
 

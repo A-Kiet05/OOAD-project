@@ -1,4 +1,4 @@
-// src/components/ShopCollection.jsx (Đã chỉnh sửa)
+// src/components/ShopCollection.jsx 
 
 import { useState, useEffect, useMemo } from 'react';
 import { useParams, Link as RouterLink } from 'react-router-dom';

@@ -65,7 +65,7 @@ export default function BookingForm() {
         if (res.data && res.data.readerProfileDTOList) {
           const mappedReaders = res.data.readerProfileDTOList.map(profile => ({
             id: profile.readerId.userID, // Lấy userID thật
-            name: profile.bio || `Reader ID ${profile.readerId.userID}`, // Dùng bio làm tên hiển thị hoặc dùng ID
+            name: profile.bio || `Reader ID ${profile.readerId.userID}`, 
             specialties: profile.specialties,
           }));
           setAllReaders(mappedReaders);
@@ -90,7 +90,7 @@ export default function BookingForm() {
       setLoading(true);
       try {
         setupAxiosToken();
-        // Gọi API SlotController với selectedReaderId (là userID thật)
+        // Gọi API SlotController với selectedReaderId ( userID thật)
         const res = await axios.get(`${BASE_URL}/slots/get-by-readerId-and-status`, {
           params: {
             readerID: selectedReaderId,

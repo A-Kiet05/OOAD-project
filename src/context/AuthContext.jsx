@@ -10,13 +10,13 @@ export function AuthProvider({ children }) {
   });
 
   useEffect(() => {
-        // Thiết lập token đã lưu cho Axios header
+        
         setupAxiosToken();
     }, [user]);
 
   // useEffect(() => {
   //       if (user) {
-  //           // Lưu thông tin user (không bao gồm token)
+  //           
   //           localStorage.setItem("currentUser", JSON.stringify(user));
   //       } else {
   //           localStorage.removeItem("currentUser");
@@ -24,7 +24,7 @@ export function AuthProvider({ children }) {
   //   }, [user]);
 
   const login = async (email, password) => {
-        // Gọi API Đăng nhập thật
+        
         const userObj = await loginApi(email, password); 
          
         // Cập nhật state User sau khi đăng nhập thành công

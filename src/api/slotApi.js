@@ -22,7 +22,7 @@ const slotApi = axios.create({
 slotApi.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("authToken"); 
-    // ⚠️ phải đúng key bạn lưu khi login
+    
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -35,8 +35,6 @@ slotApi.interceptors.request.use(
  * =========================
  * CREATE SLOT (READER)
  * =========================
- * ❌ KHÔNG gửi readerID
- * Backend dùng userService.getLogin()
  */
 export const createSlotApi = async ({ date, startTime, endTime }) => {
   return slotApi.post("/create-slot", {

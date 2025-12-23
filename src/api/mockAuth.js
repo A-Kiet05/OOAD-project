@@ -1,11 +1,12 @@
 // src/api/mockAuth.js
+//this js use for testing
 
 const DEFAULT_USERS = [
   {
     id: 1,
-    fullName: "Kiệt Lặc",
+    fullName: "Kiet Nguyen ",
     email: "kiet@gmail.com",
-    password: "kietlac123",
+    password: "kiet123",
     role: "user",
   },
   {

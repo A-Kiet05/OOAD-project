@@ -9,12 +9,12 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { getProductByIdApi } from '../api/productApi'; // Lấy dữ liệu từ API
 import { useCart } from "../context/useCart"; 
 import { formatVND } from "../utils/currency";
-import "../styles/shop.css"; // Giữ lại nếu file này cần thiết
+import "../styles/shop.css"; 
 
 export default function ProductDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  // Lấy addToCart từ Context (giờ đây sẽ tự động mở Sidebar)
+  // Lấy addToCart từ Context 
   const { addToCart } = useCart(); 
   
   const [product, setProduct] = useState(null);
@@ -63,12 +63,12 @@ export default function ProductDetail() {
       image: product.imageUrl 
     };
     
-    // Thêm sản phẩm vào giỏ hàng (và hàm này sẽ tự động mở Sidebar)
+    // Thêm sản phẩm vào giỏ hàng ( tự động mở Sidebar)
     for (let i = 0; i < quantity; i++) {
         addToCart(cartItem);
     }
     
-    // Bật trạng thái "ADDED" trong 2 giây (theo logic cũ của bạn)
+    // Bật trạng thái "ADDED" trong 2 giây 
     setAdded(true);
     setTimeout(() => setAdded(false), 2000);
   };
@@ -88,7 +88,7 @@ export default function ProductDetail() {
     );
   }
 
-  // Khôi phục phần Render UI chi tiết
+  
   return (
     <Box sx={{ p: 4, minHeight: "80vh", maxWidth: "1200px", margin: "0 auto" }}>
       <Button
