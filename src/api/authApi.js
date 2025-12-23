@@ -14,7 +14,7 @@ export const loginApi = async (email, password) => {
     try {
         const response = await axios.post(`${BASE_URL}/login`, 
             { email, passwordHash: password }, 
-            { headers: { 'Content-Type': 'application/json' } } // Thêm headers 
+            { headers: { 'Content-Type': 'application/json' } } 
         );
 
         const data = response.data;
@@ -24,12 +24,12 @@ export const loginApi = async (email, password) => {
         }
 
         const token = data.token;
-        const role = data.role; // Lấy role từ phản hồi
+        const role = data.role; 
         
-        // --- VẤN ĐỀ NẰM Ở ĐÂY: KHÔNG CÓ BIẾN 'user' TRONG PHẢN HỒI ---
         
-        // Vì Backend không trả về user ID và Full Name, chúng ta chỉ có thể tạo User Object
-        // với những gì có sẵn, và sử dụng email làm định danh tạm thời.
+        
+       
+       
         const user = {
             id: null, // Không có ID, đặt là null hoặc 0
             email: email, // Lấy email từ request
@@ -61,7 +61,7 @@ export const signupApi = async (username, fullName, email, password) => {
             username,
             fullName,
             email,
-            passwordHash : password, // <-- Gửi mật khẩu thô, Backend sẽ hash
+            passwordHash : password, 
         });
 
         const data = response.data;

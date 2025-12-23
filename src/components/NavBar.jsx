@@ -25,6 +25,8 @@ export default function NavBar() {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
   const { user, logout } = useAuth();
+  const isReader = user?.role === "READER";
+
 
   const handleClick = (event) => setAnchorEl(event.currentTarget);
   const handleClose = () => setAnchorEl(null);
@@ -109,13 +111,14 @@ export default function NavBar() {
             SHOPPING
           </Button>
           <Button
-            component={RouterLink}
-            to="/booking"
-            color="inherit"
-            sx={{ ...navBtnSx, fontSize: "0.94rem", letterSpacing: "0.06em", fontWeight: 400 }}
-          >
-            BOOKING
-          </Button>
+          component={RouterLink}
+          to={isReader ? "/reader-schedule" : "/booking"}
+          color="inherit"
+          sx={{ ...navBtnSx, fontSize: "0.94rem", letterSpacing: "0.06em", fontWeight: 400 }}
+        >
+          {isReader ? "SCHEDULE" : "BOOKING"}
+        </Button>
+
           <Button
             component={RouterLink}
             to="/reading"
