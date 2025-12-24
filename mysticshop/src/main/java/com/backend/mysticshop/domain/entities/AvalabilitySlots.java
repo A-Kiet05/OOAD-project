@@ -59,7 +59,7 @@ public class AvalabilitySlots {
     @JoinColumn(name = "reader_id", nullable = false , updatable = false)
     private User reader;
 
-    @OneToOne(mappedBy = "avalabilitySlots" )
+    @OneToMany(mappedBy = "avalabilitySlots" )
     private List<Appointment> appointments;
 
 

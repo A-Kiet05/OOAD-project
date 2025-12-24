@@ -17,6 +17,7 @@ import {
   createSlotApi,
   deleteSlotApi,
 } from "../api/slotApi";
+import NavBar from "../components/NavBar";
 
 /* =======================
    CONSTANTS
@@ -230,7 +231,10 @@ const ReaderSchedule = () => {
      RENDER
      ======================= */
   return (
+    <Box>
+      <NavBar></NavBar>
     <Box sx={{ p: 4 }}>
+      
       <Typography variant="h4" mb={3}>
         Reader Schedule
       </Typography>
@@ -377,6 +381,7 @@ const ReaderSchedule = () => {
     </Dialog>
 
 
+    </Box>
     </Box>
   );
 };
